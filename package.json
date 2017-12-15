@@ -1,0 +1,45 @@
+{
+  "name": "thelemic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/error418/thelemic.git"
+  },
+  "keywords": [
+    "github",
+    "repository",
+    "generator"
+  ],
+  "author": "Michael Gerbig",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/error418/thelemic/issues"
+  },
+  "homepage": "https://github.com/error418/thelemic#readme",
+  "dependencies": {
+    "angular": "^1.6.7",
+    "angular-animate": "^1.6.7",
+    "angular-resource": "^1.6.7",
+    "angular-route": "^1.6.7",
+    "angular-ui-bootstrap": "^2.5.6",
+    "body-parser": "^1.18.2",
+    "bootstrap": "^3.3.7",
+    "express": "^4.16.2",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
+    "passport": "^0.4.0",
+    "passport-github2": "^0.1.11",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-ng-annotate": "^2.0.0",
+    "gulp-sass": "^3.1.0"
+  }
+}
