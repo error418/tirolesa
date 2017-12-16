@@ -11,9 +11,13 @@ angular.module("Thelemic", ["ngResource", "ngRoute", "ngAnimate", "ui.bootstrap"
             templateUrl: 'organization/org-select.html',
             controller: 'OrganizationController'
         })
-        .when('/org/:login', {
+        .when('/org/:orgName', {
             templateUrl: 'repo-template/configuration.html',
             controller: 'RepoTemplateController'
+        })
+        .when('/create', {
+            templateUrl: 'repo-create/repo-create.html',
+            controller: 'RepoCreateController'
         })
         .otherwise({
             redirectTo: "/"

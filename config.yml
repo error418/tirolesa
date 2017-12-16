@@ -2,6 +2,50 @@ endpoint:
   port: 3000
 
 github:
-  client:
+  client: # OAuth2 settings
     id: 
     secret: 
+  api:
+    token: # api token of the Thelemic User account with org write access
+  base: http://localhost:4000
+
+template:
+  enforce_template: 
+    repo: "default"
+    branch: "default"
+
+  repo:
+    default:
+      name: "Default"
+      config: &default-repo
+        private: false
+        has_issues: true
+        has_projects: false
+        has_wiki: true
+        allow_squash_merge: true
+        allow_merge_commit: true
+        allow_rebase_merge: true
+        auto_init: true # is required to be true
+        gitignore_template: "Gradle"
+    private:
+      name: "Private Repository"
+      config:
+        <<: *default-repo
+        private: true
+          
+  branch:
+    default:
+      name: "Default"
+      branch: "master"
+      config: &default-branch
+        required_status_checks:
+          # branches need to be up to date
+          strict: true
+          contexts: []
+        required_pull_request_reviews:
+          dismiss_stale_reviews: true
+        enforce_admins:
+        restrictions:
+
+
+  
