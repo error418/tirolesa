@@ -1,13 +1,16 @@
-<div class="col-xs-12" ng-show="!auth.success">
-    Please log in to proceed
-    <a href="./auth/github" class="btn btn-primary">Authenticate with GitHub</a>
-</div>
+<div class="start-controller" ng-show="auth.$resolved">
+    <div class="col-xs-12" ng-hide="auth.success">
+        Please log in to proceed
+        <a href="./auth/github" class="btn btn-primary">Authenticate with GitHub</a>
+    </div>
 
-<div class="col-xs-12">
-    <div class="list-group org-list">
-        <a href="#" ng-click="select(org)" class="list-group-item" ng-repeat="org in orgs">
-            <img class="avatar" ng-src="{{ org.avatar_url }}" />
-            <span class="org-info">{{ org.login }} <span class="description text-muted">a {{ org.description }}</span></span>
-        </a>
+    <div class="col-xs-12" ng-show="auth.success">
+        <h1>Choose your destiny</h1>
+        <div class="list-group org-list">
+            <a href="#!/org/{{ org.login }}" class="list-group-item" ng-repeat="org in orgs">
+                <img class="avatar" ng-src="{{ org.avatar_url }}" />
+                <span class="org-info">{{ org.login }} <span class="description text-muted">a {{ org.description }}</span></span>
+            </a>
+        </div>
     </div>
 </div>

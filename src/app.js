@@ -11,7 +11,7 @@ angular.module("Thelemic", ["ngResource", "ngRoute", "ngAnimate", "ui.bootstrap"
             templateUrl: 'organization/org-select.html',
             controller: 'OrganizationController'
         })
-        .when('/org/:id', {
+        .when('/org/:login', {
             templateUrl: 'repo-template/configuration.html',
             controller: 'RepoTemplateController'
         })
