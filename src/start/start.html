@@ -1,0 +1,13 @@
+<div class="col-xs-12" ng-show="!auth.success">
+    Please log in to proceed
+    <a href="./auth/github" class="btn btn-primary">Authenticate with GitHub</a>
+</div>
+
+<div class="col-xs-12">
+    <div class="list-group org-list">
+        <a href="#" ng-click="select(org)" class="list-group-item" ng-repeat="org in orgs">
+            <img class="avatar" ng-src="{{ org.avatar_url }}" />
+            <span class="org-info">{{ org.login }} <span class="description text-muted">a {{ org.description }}</span></span>
+        </a>
+    </div>
+</div>

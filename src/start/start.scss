@@ -1,0 +1,21 @@
+.org-list {
+    .list-group-item {
+        min-height: 45px;
+        padding-left: 50px;
+
+        .avatar {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .org-info {
+            .description {
+                padding-left: 20px;
+            }
+        }
+    }
+}
