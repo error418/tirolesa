@@ -114,7 +114,7 @@ app.post('/api/repo', ensureAuthenticated, function (req, res) {
         if (check.status != 204) {
             console.log("Reject request: user not member of organization")
             res.status(400)
-            res.send()
+            res.send("user not member of organization")
         } else {
             unirest.post(config.github.base + "/orgs/"+req.body.orgName+"/repos")
                 .headers({'User-Agent': 'thelemic'})
@@ -166,7 +166,7 @@ app.post('/api/repo/branch', ensureAuthenticated, function (req, res) {
         if (check.status != 204) {
             console.log("Reject request: user not member of organization")
             res.status(400)
-            res.send()
+            res.send("user not member of organization")
         } else {
             unirest.put(config.github.base + "/repos/"+req.body.orgName+"/"+req.body.repo+"/branches/"+req.body.branch+"/protection")
                 .headers({'User-Agent': 'thelemic'})

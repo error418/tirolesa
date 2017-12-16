@@ -1,15 +1,17 @@
 <button class="btn btn-primary" ng-click="create()">Create</button>
 
-<div>
-    Creating Repository
-</div>
+<div class="col-xs-12" ng-show="started">
+    <div>
+        <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-hide="repoCreated"></i>
+        <i class="fa fa-fw fa-check text-success" ng-show="repoCreated"></i>
 
-<div>
-    Adding Teams
-</div>
+        Creating Repository 
+    </div>
 
-<div>
-    Applying Branch protection
-</div>
+    <div>
+        <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-hide="branchConfigured"></i>
+        <i class="fa fa-fw fa-check text-success" ng-show="branchConfigured"></i>
 
- 
+        Applying Branch protection
+    </div>
+</div>

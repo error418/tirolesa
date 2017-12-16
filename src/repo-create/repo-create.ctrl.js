@@ -4,6 +4,8 @@ angular.module("Thelemic")
     var settings = Storage.get("data");
 
     $scope.create = function() {
+        $scope.started = true;
+        
         RepoCreateService.create(
             {},
             {
@@ -21,8 +23,14 @@ angular.module("Thelemic")
                     request,
                     function(success) {
                         $scope.branchConfigured = true;
+                    },
+                    function(error) {
+                        console.log(error);
                     }
                 )
+            },
+            function(error) {
+                console.log(error);
             }
         );
     };
