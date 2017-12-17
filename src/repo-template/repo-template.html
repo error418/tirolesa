@@ -1,23 +1,27 @@
-<div class="repo-template">
-    <div class="input-group">
-        <span class="input-group-addon">Repository Name</span>
-        <input type="text" class="form-control" ng-model="repoName">
+<div class="row repo-template">
+
+    <div class="col-xs-12">
+        <form name="repoForm">
+            <input name="name" type="text" class="repo-name-input" placeholder="Your Repo Name" ng-pattern="repoTemplate.pattern" ng-required="true" ng-model="repoName">
+        </form>
     </div>
 
-    The repository <span class="repo-name">{{repoName}}</span> will have the following properties
+    <div class="col-xs-12 summary">
+        The repository <span class="repo-name">{{orgName}}/{{repoName}}</span> will have the following properties
 
-    <ul class="features">
-        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.private)"></i> Private Repository</li>
-        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_issues)"></i> has Issues</li>
-        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_projects)"></i> has Projects</li>
-        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_wiki)"></i> has Wiki</li>
-        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_squash_merge)"></i> Squash Merge allowed</li>
-        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_merge_commit)"></i> Merge Commit allowed</li>
-        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_rebase_merge)"></i> Rebase Merge allowed</li>
-    </ul>
+        <ul class="features">
+            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.private)"></i> Private Repository</li>
+            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_issues)"></i> has Issues</li>
+            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_projects)"></i> has Projects</li>
+            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_wiki)"></i> has Wiki</li>
+            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_squash_merge)"></i> Squash Merge allowed</li>
+            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_merge_commit)"></i> Merge Commit allowed</li>
+            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_rebase_merge)"></i> Rebase Merge allowed</li>
+        </ul>
+    </div>
 
-    <div>
-        <a href="#!/create" class="btn btn-primary" ng-click="next()">Next</a>
+    <div class="col-xs-12">
+        <button class="btn btn-primary next" ng-click="next()" ng-disabled="!repoForm.name.$valid">Next</a>
     </div>
 
 </div>

@@ -39,7 +39,7 @@ app.use('/', express.static('dist'));
 passport.use(new GitHubStrategy({
     clientID: config.github.client.id,
     clientSecret: config.github.client.secret,
-    callbackURL: "http://localhost:3000/auth/github/callback"
+    callbackURL: config.endpoint.base + "/auth/github/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     
@@ -103,11 +103,16 @@ app.get('/api/template', ensureAuthenticated, function (req, res) {
 });
 
 app.post('/api/repo', ensureAuthenticated, function (req, res) {
-    if (config.template.enforce_template.repo) {
-        console.log("enforcing repository template...")
-        var repoName = req.body.config.name;
-        req.body.config = config.template.repo[config.template.enforce_template.repo].config
-        req.body.config.name = repoName;
+    var templateName = req.template;
+
+    var repoName = req.body.repository;
+    var template = config.template.repo[templateName]
+    template.config.name = repoName
+
+    if (!repoName.match(new RegExp(template.pattern))) {
+        res.status(400)
+        res.send()
+        return;
     }
 
     checkOrgMembership(req.body.orgName, req.user.username, function(check) {
@@ -129,38 +134,11 @@ app.post('/api/repo', ensureAuthenticated, function (req, res) {
     });
 });
 
-/*
-app.post('/api/repo/team', ensureAuthenticated, function (req, res) {
-    if (config.template.enforce_template.branch) {
-        req.body.config = config.template[config.template.enforce_template.branch]
-    }
-
-    checkOrgMembership(req.body.orgName, req.user.username, function(check) {
-        if (check.status != 204) {
-            res.status(400)
-            res.send()
-        } else {
-            unirest.put("/teams/{id}/repos/{orgName}/{repo}")
-                .routeParam("id", req.body.teamId)
-                .routeParam("orgName", req.body.orgName)
-                .routeParam("repo", req.body.repo)
-                .headers({'User-Agent': 'thelemic'})
-                .auth("", config.github.api.token)
-                .send(req.body.config)
-                .end(function (response) {
-                    res.status(response.status)
-                    res.send(response.body)
-                });
-        }
-    });
-});
-*/
 
 app.post('/api/repo/branch', ensureAuthenticated, function (req, res) {
-    if (config.template.enforce_template.branch) {
-        console.log("enforcing branch template...")
-        req.body.config = config.template.branch[config.template.enforce_template.branch].config
-    }
+    var templateName = req.template;
+
+    var template = config.template.branch[templateName]
 
     checkOrgMembership(req.body.orgName, req.user.username, function(check) {
         if (check.status != 204) {
@@ -172,7 +150,7 @@ app.post('/api/repo/branch', ensureAuthenticated, function (req, res) {
                 .headers({'User-Agent': 'thelemic'})
                 .type('json')
                 .auth("", config.github.api.token)
-                .send(req.body.config)
+                .send(template.config)
                 .end(function (response) {
                     res.status(response.status)
                     res.send(response.body)

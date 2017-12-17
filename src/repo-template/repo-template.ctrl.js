@@ -1,7 +1,8 @@
 angular.module("Thelemic")
 
-.controller("RepoTemplateController", function($scope, $routeParams, Storage, TemplateService) {
+.controller("RepoTemplateController", function($scope, $routeParams, $location, Storage, TemplateService) {
     $scope.repoName = "";
+    $scope.orgName = $routeParams.orgName;
     
     TemplateService.get(
         function(success) {
@@ -35,5 +36,7 @@ angular.module("Thelemic")
             repo: repoConfig,
             branch: $scope.branchTemplate
         });
+
+        $location.path("/create");
     };
 });

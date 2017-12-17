@@ -1,5 +1,6 @@
 endpoint:
   port: 3000
+  base: http://localhost:3000
 
 github:
   client: # OAuth2 settings
@@ -10,13 +11,11 @@ github:
   base: https://api.github.com
 
 template:
-  enforce_template: 
-    repo: "default"
-    branch: "default"
 
   repo:
     default:
       name: "Default"
+      pattern: "^[A-Za-z\\-_]+$" # repository name pattern
       config: &default-repo
         private: false
         has_issues: true

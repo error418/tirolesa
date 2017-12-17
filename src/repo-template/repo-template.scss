@@ -2,4 +2,21 @@
     ul.features {
         list-style-type: none;
     }
+
+    .summary {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .repo-name-input {
+        border: 1px dotted #DDD;
+        border-radius: 7px;
+        font-size: 2.5em;
+        width: 100%;
+        text-align: center;
+    }
+
+    .next {
+        width: 100%;
+    }
 }

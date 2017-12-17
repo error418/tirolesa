@@ -6,8 +6,4 @@ angular.module("Thelemic")
             $scope.orgs = OrganizationService.get();
         }
     );
-
-    $scope.select = function (org) {
-        
-    }
 });
