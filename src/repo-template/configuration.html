@@ -1,49 +1,20 @@
 <div class="repo-template">
-    <input type="text" ng-model="repoName">
-    
-    <h1>Repository Template</h1>
+    <div class="input-group">
+        <span class="input-group-addon">Repository Name</span>
+        <input type="text" class="form-control" ng-model="repoName">
+    </div>
 
-    <button type="button" class="btn btn-primary" ng-model="config.private" uib-btn-checkbox>
-        <i class="fa fa-fw fa-check-square-o" ng-show="config.private"></i>
-        <i class="fa fa-fw fa-square-o" ng-hide="config.private"></i>
-        Private Repository
-    </button>
+    The repository <span class="repo-name">{{repoName}}</span> will have the following properties
 
-    <button type="button" class="btn btn-primary" ng-model="config.has_issues" uib-btn-checkbox>
-        <i class="fa fa-fw fa-check-square-o" ng-show="config.has_issues"></i>
-        <i class="fa fa-fw fa-square-o" ng-hide="config.has_issues"></i>
-        has Issues
-    </button>
-
-    <button type="button" class="btn btn-primary" ng-model="config.has_projects" uib-btn-checkbox>
-        <i class="fa fa-fw fa-check-square-o" ng-show="config.has_projects"></i>
-        <i class="fa fa-fw fa-square-o" ng-hide="config.has_projects"></i>
-        has Projects
-    </button>
-
-    <button type="button" class="btn btn-primary" ng-model="config.has_wiki" uib-btn-checkbox>
-        <i class="fa fa-fw fa-check-square-o" ng-show="config.has_wiki"></i>
-        <i class="fa fa-fw fa-square-o" ng-hide="config.has_wiki"></i>
-        has Wiki
-    </button>
-
-    <button type="button" class="btn btn-primary" ng-model="config.allow_squash_merge" uib-btn-checkbox>
-        <i class="fa fa-fw fa-check-square-o" ng-show="config.allow_squash_merge"></i>
-        <i class="fa fa-fw fa-square-o" ng-hide="config.allow_squash_merge"></i>
-        allow squash merge
-    </button>
-
-    <button type="button" class="btn btn-primary" ng-model="config.allow_merge_commit" uib-btn-checkbox>
-        <i class="fa fa-fw fa-check-square-o" ng-show="config.allow_merge_commit"></i>
-        <i class="fa fa-fw fa-square-o" ng-hide="config.allow_merge_commit"></i>
-        allow merge commit
-    </button>
-
-    <button type="button" class="btn btn-primary" ng-model="config.has_wiki" uib-btn-checkbox>
-        <i class="fa fa-fw fa-check-square-o" ng-show="config.has_wiki"></i>
-        <i class="fa fa-fw fa-square-o" ng-hide="config.has_wiki"></i>
-        has Wiki
-    </button>
+    <ul class="features">
+        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.private)"></i> Private Repository</li>
+        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_issues)"></i> has Issues</li>
+        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_projects)"></i> has Projects</li>
+        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_wiki)"></i> has Wiki</li>
+        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_squash_merge)"></i> Squash Merge allowed</li>
+        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_merge_commit)"></i> Merge Commit allowed</li>
+        <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_rebase_merge)"></i> Rebase Merge allowed</li>
+    </ul>
 
     <div>
         <a href="#!/create" class="btn btn-primary" ng-click="next()">Next</a>

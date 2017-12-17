@@ -3,7 +3,7 @@ angular.module("Thelemic")
 .controller("RepoTemplateController", function($scope, $routeParams, Storage, TemplateService) {
     $scope.repoName = "";
     
-    $scope.template = TemplateService.get(
+    TemplateService.get(
         function(success) {
             if (success.enforce_template.repo) {
                 $scope.repoTemplate = success.repo[success.enforce_template.repo];
@@ -18,6 +18,13 @@ angular.module("Thelemic")
             }
         }
     );
+
+    $scope.indicator = function(property) {
+        return {
+            "fa-check-circle text-success": property,
+            "fa-remove text-danger": !property
+        };
+    };
 
     $scope.next = function() {
         var repoConfig = angular.copy($scope.repoTemplate.config);
