@@ -3,15 +3,20 @@ angular.module("Thelemic")
 .controller("RepoTemplateController", function($scope, $routeParams, $location, Storage, TemplateService) {
     $scope.repoName = "";
     $scope.orgName = $routeParams.orgName;
-    
+
     TemplateService.get(
         function(success) {
-            if (success.enforce_template.repo) {
-                $scope.repoTemplate = success.repo[success.enforce_template.repo];
-            } else {
-                $scope.repoTemplate = {};
+            for (key in success.repo) {
+                success.repo[key].$key = key;
             }
 
+            $scope.templateEnforce = success.enforce_template.repo;
+            if($scope.templateEnforce) {
+                $scope.repoTemplates = [success.repo[$scope.templateEnforce]];
+            } else {
+                $scope.repoTemplates = success.repo;
+            }
+            
             if (success.enforce_template.branch) {
                 $scope.branchTemplate = success.branch[success.enforce_template.branch];
             } else {
@@ -37,6 +42,6 @@ angular.module("Thelemic")
             branch: $scope.branchTemplate
         });
 
-        $location.path("/create");
+        $location.path("/create/"  + $routeParams.orgName + "/" + $scope.repoName + "/" + $scope.repoTemplate.name);
     };
 });

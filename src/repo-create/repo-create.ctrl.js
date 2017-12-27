@@ -1,7 +1,11 @@
 angular.module("Thelemic")
 
-.controller("RepoCreateController", function($scope, $q, Storage, RepoCreateService) {
+.controller("RepoCreateController", function($scope, $q, $routeParams, Storage, RepoCreateService) {
     var settings = Storage.get("data");
+
+    $scope.orgName = $routeParams.orgName;
+    $scope.repoName = $routeParams.repoName;
+    $scope.templateName = $routeParams.templateName;
 
     $scope.create = function() {
         $scope.started = true;
@@ -15,8 +19,8 @@ angular.module("Thelemic")
             function(success) {
                 $scope.repoCreated = true;
                 var request = settings.branch;
-                request.orgName = settings.orgName;
-                request.repo = settings.repo.name;
+                request.orgName = $scope.orgName;
+                request.repo = $scope.repoName;
 
                 RepoCreateService.branchProtection(
                     {},
