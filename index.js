@@ -1,4 +1,3 @@
-var yaml = require("yamljs")
 var session = require('express-session')
 var express = require('express')
 var app = express()
@@ -8,6 +7,7 @@ var unirest = require("unirest")
 var passport = require("passport")
 var GitHubStrategy = require("passport-github2")
 
+var yaml = require("yamljs")
 var config = yaml.load('config.yml')
 
 app.use(require('body-parser').urlencoded({ extended: true }));
