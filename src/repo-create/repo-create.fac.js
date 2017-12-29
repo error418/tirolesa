@@ -4,14 +4,6 @@ angular.module("Thelemic")
     return $resource('./api/repo', {}, {
         create: {
             method: 'post'
-        },
-        branchProtection: {
-            url: './api/repo/branch',
-            method: 'post'
-        },
-        addTeams: {
-            url: './api/repo/team',
-            method: 'post'
         }
     });
 })

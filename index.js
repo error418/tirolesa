@@ -2,6 +2,7 @@ var session = require('express-session')
 var express = require('express')
 var app = express()
 
+
 var unirest = require("unirest")
 
 var passport = require("passport")
@@ -9,6 +10,9 @@ var GitHubStrategy = require("passport-github2")
 
 var yaml = require("yamljs")
 var config = yaml.load('config.yml')
+
+var serviceApi = require('./service-api')(config)
+
 
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('body-parser').json());
@@ -94,78 +98,9 @@ function ensureAuthenticated(req, res, next) {
     res.send("unauthenticated")
 }
 
-app.get('/api/orgs', ensureAuthenticated, function (req, res) {
-    res.send(req.user.orgs)
-});
-
-app.get('/api/template', ensureAuthenticated, function (req, res) {
-    res.send(config.template)
-});
-
-app.post('/api/repo', ensureAuthenticated, function (req, res) {
-    var templateName = req.template;
-
-    var repoName = req.body.repository;
-    var template = config.template.repo[templateName]
-    template.config.name = repoName
-
-    if (!repoName.match(new RegExp(template.pattern))) {
-        res.status(400)
-        res.send()
-        return;
-    }
-
-    checkOrgMembership(req.body.orgName, req.user.username, function(check) {
-        if (check.status != 204) {
-            console.log("Reject request: user not member of organization")
-            res.status(400)
-            res.send("user not member of organization")
-        } else {
-            unirest.post(config.github.base + "/orgs/"+req.body.orgName+"/repos")
-                .headers({'User-Agent': 'thelemic'})
-                .type('json')
-                .auth("", config.github.api.token)
-                .send(req.body.config)
-                .end(function (response) {
-                    res.status(response.status)
-                    res.send(response.body)
-                });
-        }
-    });
-});
-
-
-app.post('/api/repo/branch', ensureAuthenticated, function (req, res) {
-    var templateName = req.template;
-
-    var template = config.template.branch[templateName]
-
-    checkOrgMembership(req.body.orgName, req.user.username, function(check) {
-        if (check.status != 204) {
-            console.log("Reject request: user not member of organization")
-            res.status(400)
-            res.send("user not member of organization")
-        } else {
-            unirest.put(config.github.base + "/repos/"+req.body.orgName+"/"+req.body.repo+"/branches/"+req.body.branch+"/protection")
-                .headers({'User-Agent': 'thelemic'})
-                .type('json')
-                .auth("", config.github.api.token)
-                .send(template.config)
-                .end(function (response) {
-                    res.status(response.status)
-                    res.send(response.body)
-                });
-        }
-    });
-});
-
-
-function checkOrgMembership(orgName, username, callback) {
-    unirest.get(config.github.base+"/orgs/"+orgName+"/members/"+username)
-        .headers({'User-Agent': 'thelemic'})
-        .auth("", config.github.api.token)
-        .end(callback)
-}
+app.get('/api/orgs', ensureAuthenticated, serviceApi.listOrganizations);
+app.get('/api/template', ensureAuthenticated, serviceApi.listTemplates);
+app.post('/api/repo', ensureAuthenticated, serviceApi.createRepositoryByTemplate);
 
 console.log("Listening on http://localhost:" + config.endpoint.port);
 app.listen(config.endpoint.port)

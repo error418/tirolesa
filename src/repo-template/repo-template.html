@@ -7,18 +7,30 @@
     </div>
 
     <div class="col-xs-12 summary">
-        The repository <span class="repo-name">{{orgName}}/{{repoName}}</span> will have the following properties
+        <h3>Select Repository Template</h3>
 
-        {{ templateName }}
-        <ul class="features">
-            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.private)"></i> Private Repository</li>
-            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_issues)"></i> has Issues</li>
-            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_projects)"></i> has Projects</li>
-            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.has_wiki)"></i> has Wiki</li>
-            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_squash_merge)"></i> Squash Merge allowed</li>
-            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_merge_commit)"></i> Merge Commit allowed</li>
-            <li><i class="fa fa-fw" ng-class="indicator(repoTemplate.config.allow_rebase_merge)"></i> Rebase Merge allowed</li>
-        </ul>
+        
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="list-group org-list">
+                    <a href ng-click="selectRepoTemplate(template)" class="list-group-item" ng-class="{'active': template.$key == selectedRepoTemplate.$key}" ng-repeat="template in repoTemplates">
+                        {{ template.name }}
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-xs-6">
+                <ul class="features">
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.private)"></i> Private Repository</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.has_issues)"></i> has Issues</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.has_projects)"></i> has Projects</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.has_wiki)"></i> has Wiki</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.allow_squash_merge)"></i> Squash Merge allowed</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.allow_merge_commit)"></i> Merge Commit allowed</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.allow_rebase_merge)"></i> Rebase Merge allowed</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <div class="col-xs-12">

@@ -10,20 +10,18 @@ angular.module("Thelemic")
                 success.repo[key].$key = key;
             }
 
-            $scope.templateEnforce = success.enforce_template.repo;
-            if($scope.templateEnforce) {
-                $scope.repoTemplates = [success.repo[$scope.templateEnforce]];
-            } else {
-                $scope.repoTemplates = success.repo;
-            }
-            
-            if (success.enforce_template.branch) {
-                $scope.branchTemplate = success.branch[success.enforce_template.branch];
-            } else {
-                $scope.branchTemplate = {};
-            }
+            $scope.repoTemplates = success.repo;
+            $scope.branchTemplates = success.branch;
+
+            // preselect templates
+            $scope.selectedRepoTemplate = success.repo[Object.keys(success.repo)[0]];
+            $scope.selectedBranchTemplate = success.branch[Object.keys(success.branch)[0]];
         }
     );
+
+    $scope.selectRepoTemplate = function(template) {
+        $scope.selectedRepoTemplate = template;
+    };
 
     $scope.indicator = function(property) {
         return {
@@ -33,15 +31,6 @@ angular.module("Thelemic")
     };
 
     $scope.next = function() {
-        var repoConfig = angular.copy($scope.repoTemplate.config);
-        repoConfig.name = $scope.repoName;
-
-        Storage.put("data", {
-            orgName: $routeParams.orgName,
-            repo: repoConfig,
-            branch: $scope.branchTemplate
-        });
-
-        $location.path("/create/"  + $routeParams.orgName + "/" + $scope.repoName + "/" + $scope.repoTemplate.name);
+        $location.path("/create/" + $routeParams.orgName + "/" + $scope.repoName + "/" + $scope.selectedRepoTemplate.$key);
     };
 });

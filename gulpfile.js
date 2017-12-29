@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var ngAnnotate = require('gulp-ng-annotate');
 var sass = require('gulp-sass')
+var sourcemaps = require('gulp-sourcemaps');
 
 var srcJs = ['src/app.js', 'src/**/*.js'];
 var assets = ['src/**/*.html', 'src/**/*.css'];
@@ -11,8 +12,10 @@ var targetDir = "./dist"
 
 gulp.task('build', function() {
     return gulp.src(srcJs)
+        .pipe(sourcemaps.init())
         .pipe(ngAnnotate())
         .pipe(concat('all.js'))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest(targetDir));
 });
 

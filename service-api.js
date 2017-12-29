@@ -1,5 +1,4 @@
 var Sequence = require('sequence').Sequence;
-var seq = Sequence.create();
 var unirest = require("unirest");
 
 
@@ -9,25 +8,26 @@ module.exports = function (config) {
         var err = false;
         
         var orgName = req.body.orgName;
-        var repoTemplateName = req.body.template;
+        var repoName = req.body.repoName;
+        var repoTemplateName = req.body.repoTemplate;
         var branchTemplateName = req.body.branchTemplate;    
-        var repoName = req.body.repository;
-
-        var repoTemplate = config.template.repo[templateName]
-        var branchTemplate = config.template.branch[branchTemplateName]
+        
+        var repoTemplate = config.template.repo[repoTemplateName]
+        var branchTemplate = config.template.branch["default"] // TODO: make configurable
         
         repoTemplate.config.name = repoName
         
-        if (!repoName.match(new RegExp(template.pattern))) {
+        if (!repoName.match(new RegExp(repoTemplate.pattern))) {
             res.status(400)
             res.send("repository name does not match template pattern")
             return;
         }
-
+        
+        var sequence = Sequence.create();
         sequence
             .then(function (next) {
                 createRepository(orgName, repoTemplate.config, function (response) {
-                    if(response.status === 201) {
+                    if(response.ok) {
                         next();
                     } else {
                         res.status(400)
@@ -36,8 +36,8 @@ module.exports = function (config) {
                 })
             })
             .then(function (next) {
-                configureBranch(orgName, repoName, branchName, branchTemplate.config, function (response) {
-                    if(response.status === 200) {
+                configureBranch(orgName, repoName, branchTemplate.branch, branchTemplate.config, function (response) {
+                    if(response.ok) {
                         next();
                     } else {
                         res.status(400)
@@ -51,7 +51,6 @@ module.exports = function (config) {
             });
     }
 
-
     function listOrganizations(req, res) {
         res.send(req.user.orgs)
     }
@@ -59,6 +58,7 @@ module.exports = function (config) {
     function listTemplates(req, res) {
         res.send(config.template)
     }
+    
 
     function createRepository(orgName, repositoryConfig, end) {
         unirest.post(config.github.base + "/orgs/"+orgName+"/repos")
