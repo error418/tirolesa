@@ -8,7 +8,8 @@ angular.module("Thelemic")
                 orgName: $routeParams.orgName,
                 repoName: $routeParams.repoName,
                 config: $routeParams.repoName,
-                repoTemplate: $routeParams.repoTemplateName
+                repoTemplate: $routeParams.repoTemplateName,
+                branchTemplate: $routeParams.branchTemplateName
             },
             function(success) {
                 $scope.repoCreated = true;

@@ -1,5 +1,7 @@
 # thelemic
 
+## Intention
+
 ## Required Permissions
 
 - `admin:org`

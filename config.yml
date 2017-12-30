@@ -24,7 +24,7 @@ template:
         allow_squash_merge: true
         allow_merge_commit: true
         allow_rebase_merge: true
-        auto_init: true # is required to be true
+        auto_init: true # is required to be true; otherwise no branch settings can be applied
         gitignore_template: "Gradle"
     private:
       name: "Private Repository"
@@ -33,8 +33,12 @@ template:
         private: true
           
   branch:
+    none:
+      name: "None"
+      branch: null
+      config: null
     default:
-      name: "Default"
+      name: "Protect Master"
       branch: "master"
       config: &default-branch
         required_status_checks:

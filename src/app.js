@@ -15,7 +15,7 @@ angular.module("Thelemic", ["ngResource", "ngRoute", "ngAnimate", "ui.bootstrap"
             templateUrl: 'repo-template/repo-template.html',
             controller: 'RepoTemplateController'
         })
-        .when('/create/:orgName/:repoName/:repoTemplateName', {
+        .when('/create/:orgName/:repoName/:repoTemplateName/:branchTemplateName', {
             templateUrl: 'repo-create/repo-create.html',
             controller: 'RepoCreateController'
         })

@@ -10,6 +10,10 @@ angular.module("Thelemic")
                 success.repo[key].$key = key;
             }
 
+            for (key in success.branch) {
+                success.branch[key].$key = key;
+            }
+
             $scope.repoTemplates = success.repo;
             $scope.branchTemplates = success.branch;
 
@@ -23,6 +27,10 @@ angular.module("Thelemic")
         $scope.selectedRepoTemplate = template;
     };
 
+    $scope.selectBranchTemplate = function(template) {
+        $scope.selectedBranchTemplate = template;
+    };
+
     $scope.indicator = function(property) {
         return {
             "fa-check-circle text-success": property,
@@ -31,6 +39,6 @@ angular.module("Thelemic")
     };
 
     $scope.next = function() {
-        $location.path("/create/" + $routeParams.orgName + "/" + $scope.repoName + "/" + $scope.selectedRepoTemplate.$key);
+        $location.path("/create/" + $routeParams.orgName + "/" + $scope.repoName + "/" + $scope.selectedRepoTemplate.$key + "/" + $scope.selectedBranchTemplate.$key);
     };
 });

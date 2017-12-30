@@ -33,6 +33,31 @@
         </div>
     </div>
 
+    <div class="col-xs-12 summary">
+        <h3>Select Branch Protection Template</h3>
+
+        
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="list-group org-list">
+                    <a href ng-click="selectBranchTemplate(template)" class="list-group-item" ng-class="{'active': template.$key == selectedBranchTemplate.$key}" ng-repeat="template in branchTemplates">
+                        {{ template.name }}
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-xs-6">
+                <ul class="features">
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.branch)"></i> Protects branch {{selectedBranchTemplate.branch}}</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.required_status_checks.strict)"></i> requires Status-Checks</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.required_pull_request_reviews)"></i> requires Pull-Request Reviews</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.required_pull_request_reviews.dismiss_stale_reviews)"></i> dismiss stale Reviews</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.enforce_admins)"></i> enforce rules for admins</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="col-xs-12">
         <button class="btn btn-primary next" ng-click="next()" ng-disabled="!repoForm.name.$valid">Next</a>
     </div>
