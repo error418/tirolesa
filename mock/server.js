@@ -13,7 +13,6 @@ var serviceApi = require('./service-api')(config)
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('body-parser').json());
 
-app.use('/css/', express.static('node_modules/bootstrap/dist/css'));
 app.use('/css/', express.static('node_modules/font-awesome/css'));
 app.use('/js/', express.static('node_modules/bootstrap/dist/js'));
 
@@ -25,7 +24,6 @@ app.use('/js/', express.static('node_modules/angular-animate'));
 app.use('/js/', express.static('node_modules/angular-resource'));
 app.use('/js/', express.static('node_modules/angular-route'));
 
-app.use('/fonts/', express.static('node_modules/bootstrap/dist/fonts'));
 app.use('/fonts/', express.static('node_modules/font-awesome/fonts'));
 
 app.use('/', express.static('dist'));

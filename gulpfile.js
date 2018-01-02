@@ -8,7 +8,8 @@ var srcJs = ['src/app.js', 'src/**/*.js'];
 var assets = ['src/**/*.html', 'src/**/*.css'];
 var sassSrc = ['src/**/*.scss'];
 
-var targetDir = "./dist"
+var targetDir = "./dist";
+var bootstrapDir = './node_modules/bootstrap-sass';
 
 gulp.task('build', function() {
     return gulp.src(srcJs)
@@ -21,10 +22,17 @@ gulp.task('build', function() {
 
 gulp.task('sass', function() {
     return gulp.src(sassSrc)
-        .pipe(sass().on('error', sass.logError))
+        .pipe(sass({
+            includePaths: [bootstrapDir + '/assets/stylesheets'],
+        }).on('error', sass.logError))
         .pipe(concat('style.css'))
         .pipe(gulp.dest(targetDir));
-})
+});
+
+gulp.task('fonts', function() {
+    return gulp.src(bootstrapDir + '/assets/fonts/**/*')
+    .pipe(gulp.dest(targetDir + '/fonts'));
+});
 
 gulp.task("assets", function() {
     return gulp.src(assets)

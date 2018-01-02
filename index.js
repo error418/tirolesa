@@ -21,7 +21,6 @@ app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: fals
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/css/', express.static('node_modules/bootstrap/dist/css'));
 app.use('/css/', express.static('node_modules/font-awesome/css'));
 app.use('/js/', express.static('node_modules/bootstrap/dist/js'));
 
@@ -33,7 +32,6 @@ app.use('/js/', express.static('node_modules/angular-animate'));
 app.use('/js/', express.static('node_modules/angular-resource'));
 app.use('/js/', express.static('node_modules/angular-route'));
 
-app.use('/fonts/', express.static('node_modules/bootstrap/dist/fonts'));
 app.use('/fonts/', express.static('node_modules/font-awesome/fonts'));
 
 app.use('/', express.static('dist'));
