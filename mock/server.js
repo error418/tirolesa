@@ -1,15 +1,17 @@
-var yaml = require("yamljs")
-var session = require('express-session')
 var express = require('express')
 var app = express()
 
+
 var unirest = require("unirest")
 
+var yaml = require("yamljs")
 var config = yaml.load('config.yml')
+
+var serviceApi = require('./service-api')(config)
+
 
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('body-parser').json());
-
 
 app.use('/css/', express.static('node_modules/bootstrap/dist/css'));
 app.use('/css/', express.static('node_modules/font-awesome/css'));
@@ -44,40 +46,9 @@ function ensureAuthenticated(req, res, next) {
     return next();
 }
 
-app.get('/api/orgs', ensureAuthenticated, function (req, res) {
-    res.send([
-        {
-            "login": "interesting-org",
-            "url": "https://api.github.com/orgs/github",
-            "description": "A great organization"
-        },
-        {
-            "login": "boring-org",
-            "url": "https://api.github.com/orgs/github",
-            "description": "A plain organization"
-        },
-        {
-            "login": "unicorn-org",
-            "url": "https://api.github.com/orgs/github",
-            "description": "An unusual organization"
-        },
-    ])
-});
-
-app.get('/api/template', ensureAuthenticated, function (req, res) {
-    res.send(config.template)
-});
-
-app.post('/api/repo', ensureAuthenticated, function (req, res) {
-    res.status(200)
-    res.send()
-});
-
-
-app.post('/api/repo/branch', ensureAuthenticated, function (req, res) {
-    res.status(200)
-    res.send()
-});
+app.get('/api/orgs', ensureAuthenticated, serviceApi.listOrganizations);
+app.get('/api/template', ensureAuthenticated, serviceApi.listTemplates);
+app.post('/api/repo', ensureAuthenticated, serviceApi.createRepositoryByTemplate);
 
 console.log("Listening on http://localhost:" + config.endpoint.port);
 app.listen(config.endpoint.port)
