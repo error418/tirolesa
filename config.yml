@@ -26,12 +26,18 @@ template:
         allow_rebase_merge: true
         auto_init: true # is required to be true; otherwise no branch settings can be applied
         gitignore_template: "Gradle"
+      label: &default-label
+        - name: "security"
+          color: "#F00"
+        - name: "docs"
+          color: "#FF0"
+
     private:
       name: "Private Repository"
       config:
         <<: *default-repo
         private: true
-          
+    
   branch:
     none:
       name: "None"

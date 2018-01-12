@@ -20,6 +20,7 @@
             </div>
             
             <div class="col-xs-6">
+                Repository Properties
                 <ul class="features">
                     <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.private)"></i> Private Repository</li>
                     <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.has_issues)"></i> has Issues</li>
@@ -29,6 +30,13 @@
                     <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.allow_merge_commit)"></i> Merge Commit allowed</li>
                     <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.allow_rebase_merge)"></i> Rebase Merge allowed</li>
                 </ul>
+
+                <div ng-show="selectedRepoTemplate.label">
+                    Additional Issue Labels
+                    <ul class="features">
+                        <li ng-repeat="label in selectedRepoTemplate.label"><i class="fa fa-fw fa-square" ng-style="{color: label.color}"></i> {{label.name}}</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

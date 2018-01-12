@@ -45,6 +45,11 @@ module.exports = function (config) {
                     }
                 })
             })
+            .then(function(next) {
+                addIssueLabels(orgName, repoName, repoTemplate.config, function () {
+                    next(); // TODO: error handling
+                })
+            })
             .then(function () {
                 res.status(200);
                 res.send();
@@ -77,6 +82,32 @@ module.exports = function (config) {
             .auth("", config.github.api.token)
             .send(templateConfig)
             .end(end);
+    }
+
+    function addIssueLabels(orgName, repoName, templateConfig, end) {
+        var labels = templateConfig.label;
+
+        if(!labels) {
+            end();
+            return;
+        }
+
+        var sequence = Sequence.create();
+        
+        for(var i = 0; i < labels.length(); i++) {
+            sequence.then(function(next) {
+                unirest.post(config.github.base + "/repos/"+orgName+"/"+repoName+"/labels")
+                    .headers({'User-Agent': 'thelemic'})
+                    .type('json')
+                    .auth("", config.github.api.token)
+                    .send(labels[i])
+                    .end(next())
+            });
+        }
+        
+        sequence.then(function() {
+            end();
+        })
     }
 
     return {
