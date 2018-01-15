@@ -1,3 +1,12 @@
+definitions:
+  labels:
+    - &label-security
+      name: "security" 
+      color: "#F00"
+    - &label-docs
+      name: "docs"
+      color: "#FF0"
+
 endpoint:
   port: 3000
   base: http://localhost:3000
@@ -26,17 +35,16 @@ template:
         allow_rebase_merge: true
         auto_init: true # is required to be true; otherwise no branch settings can be applied
         gitignore_template: "Gradle"
-      label: &default-label
-        - name: "security"
-          color: "#F00"
-        - name: "docs"
-          color: "#FF0"
-
+      label:
+        - *label-security
+        - *label-docs
     private:
       name: "Private Repository"
       config:
         <<: *default-repo
         private: true
+      label:
+        - *label-docs
     
   branch:
     none:

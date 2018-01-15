@@ -1,8 +1,12 @@
 <div class="row repo-template">
 
     <div class="col-xs-12">
+        <h3>Repository Name</h3>
         <form name="repoForm">
-            <input name="name" type="text" class="repo-name-input" placeholder="Your Repo Name" ng-pattern="repoTemplate.pattern" ng-required="true" ng-model="repoName">
+            <div class="input-group input-group-lg repo-name-input">
+                <span class="input-group-addon">{{ orgName }}/</span>
+                <input name="name" type="text" class="form-control" placeholder="Your Repo Name" ng-pattern="repoTemplate.pattern" ng-required="true" ng-model="repoName">
+            </div>
         </form>
     </div>
 
@@ -19,7 +23,7 @@
                 </div>
             </div>
             
-            <div class="col-xs-6">
+            <div class="col-xs-6 panel">
                 Repository Properties
                 <ul class="features">
                     <li><i class="fa fa-fw" ng-class="indicator(selectedRepoTemplate.config.private)"></i> Private Repository</li>
@@ -54,7 +58,7 @@
                 </div>
             </div>
             
-            <div class="col-xs-6">
+            <div class="col-xs-6 panel">
                 <ul class="features">
                     <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.branch)"></i> Protects branch {{selectedBranchTemplate.branch}}</li>
                     <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.required_status_checks.strict)"></i> requires Status-Checks</li>
