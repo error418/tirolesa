@@ -8,7 +8,7 @@
         <h1>Choose your destiny</h1>
         <div class="list-group org-list">
             <a href="#!/org/{{ org.login }}" class="list-group-item" ng-repeat="org in orgs" uib-tooltip="{{ org.description }}" tooltip-popup-delay="750" tooltip-placement="top-right">
-                <img class="avatar" ng-src="{{ org.avatar_url }}" />
+                <img class="avatar" ng-src="{{ org.avatar }}" />
                 <span class="org-info">
                     {{ org.login }}
                 </span>

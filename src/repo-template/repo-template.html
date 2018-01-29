@@ -38,7 +38,7 @@
                 <div ng-show="selectedRepoTemplate.label">
                     Additional Issue Labels
                     <ul class="features">
-                        <li ng-repeat="label in selectedRepoTemplate.label"><i class="fa fa-fw fa-square" ng-style="{color: label.color}"></i> {{label.name}}</li>
+                        <li ng-repeat="label in selectedRepoTemplate.label"><i class="fa fa-fw fa-square" ng-style="{color: '#' + label.color}"></i> {{label.name}}</li>
                     </ul>
                 </div>
             </div>

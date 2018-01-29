@@ -39,21 +39,40 @@ app.use('/', express.static('dist'));
 
 // OAuth configuration *******************************************************
 passport.use(new GitHubStrategy({
-    clientID: config.github.client.id,
-    clientSecret: config.github.client.secret,
+    clientID: config.github.oauth.id,
+    clientSecret: config.github.oauth.secret,
     callbackURL: config.endpoint.base + "/auth/github/callback"
   },
   function(accessToken, refreshToken, profile, done) {
-    
-    unirest.get(config.github.base + "/user/orgs")
+    var user = {
+        displayName: profile.displayName,
+        username: profile.username,
+        photos: profile.photos,
+        orgs: [],
+        installations: {}
+    };
+
+    unirest.get(config.github.base + "/user/installations")
     .headers({
         'User-Agent': 'thelemic',
-        "Authorization": "Bearer " + accessToken
+        'Accept': 'application/vnd.github.machine-man-preview+json',
+        "Authorization": "token " + accessToken
     })
-    .end(function (orgs) {
-        profile.orgs = orgs.body;
-        return done(null, profile);
+    .end(function (res) {
+        res.body.installations.forEach(function(org) {
+            var item = {
+                login: org.account.login,
+                type: org.account.type,
+                avatar: org.account.avatar_url
+            };
+
+            user.orgs.push(item);
+            user.installations[item.login] = org.id;
+        });
+        
+        return done(null, user);
     })
+
   }
 ));
 

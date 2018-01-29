@@ -1,23 +1,26 @@
+# References for later use in the yaml.
 definitions:
   labels:
     - &label-security
       name: "security" 
-      color: "#F00"
+      color: "ff0000"
     - &label-docs
       name: "docs"
-      color: "#FF0"
+      color: "ffff00"
 
+
+# Configuration
 endpoint:
   port: 3000
-  base: http://localhost:3000
+  base: http://api.github.com
 
 github:
-  client: # OAuth2 settings
+  oauth: # GitHub App OAuth settings
     id: 
     secret: 
-  api:
-    token: # api token of the Thelemic User account with org write access
-  base: https://api.github.com
+  appId:  # github app id
+  keyFile: github-app.pem
+  base: http://localhost:6000 # https://api.github.com
 
 template:
 
