@@ -125,8 +125,6 @@ module.exports = function (config) {
 
     function addIssueLabels(apiToken, orgName, repoName, labels, end) {
 
-console.log(labels);
-
         if(!labels) {
             console.log("no extra labels specified.")
             end();
