@@ -1,5 +1,5 @@
 # References for later use in the yaml.
-definitions:
+_anchors:
   labels:
     - &label-security
       name: "security" 
@@ -9,10 +9,18 @@ definitions:
       color: "ffff00"
 
 
+
 # Configuration
 endpoint:
-  port: 3000
-  base: http://api.github.com
+  port: 3000 # application port
+session: # defaults to local session storage, if 'redis' is not configured
+  secret: keyboard cat # please change this :)
+  redis: # for configuration options see https://github.com/tj/connect-redis#options
+    host: localhost
+    port: 4500 # 6379
+    ttl: 30000
+    logErrors: true
+
 
 github:
   oauth: # GitHub App OAuth settings
@@ -37,7 +45,7 @@ template:
         allow_merge_commit: true
         allow_rebase_merge: true
         auto_init: true # is required to be true; otherwise no branch settings can be applied
-        gitignore_template: "Gradle"
+        gitignore_template: "Gradle" # see https://github.com/github/gitignore
       label:
         - *label-security
         - *label-docs

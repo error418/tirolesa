@@ -16,7 +16,25 @@ var serviceApi = require('./service-api')(config)
 
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('body-parser').json());
-app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
+
+// configure session storage
+if (config.session.redis) {
+    console.log("configuring to use Redis as session storage")
+    var redisStore = require('connect-redis')(session);
+    app.use(session({ 
+        secret: config.session.secret,
+        store: new redisStore(config.session.redis),
+        saveUninitialized: false,
+        resave: false
+    }));
+} else {
+    console.log("configuring to use LOCAL storage")
+    app.use(session({ 
+        secret: config.session.secret, 
+        resave: false, 
+        saveUninitialized: false 
+    }));
+}
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -40,8 +58,7 @@ app.use('/', express.static('dist'));
 // OAuth configuration *******************************************************
 passport.use(new GitHubStrategy({
     clientID: config.github.oauth.id,
-    clientSecret: config.github.oauth.secret,
-    callbackURL: config.endpoint.base + "/auth/github/callback"
+    clientSecret: config.github.oauth.secret
   },
   function(accessToken, refreshToken, profile, done) {
     var user = {

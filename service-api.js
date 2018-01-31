@@ -4,31 +4,6 @@ var unirest = require("unirest");
 
 module.exports = function (config) {
     var githubApp = require("./github-app")(config);
-
-    var createApiToken = function(installationId, done) {
-        unirest.post(config.github.base + "/installations/" + installationId + "/access_tokens")
-            .headers({
-                'User-Agent': 'thelemic',
-                'Accept': 'application/vnd.github.machine-man-preview+json',
-                'Authorization': 'Bearer ' + githubApp.createJWT()
-            })
-            .end(function (res) {
-                if(res.ok) {
-                    done(res.body.token); // error handling
-                } else {
-                    console.log("error retrieving api token")
-                }
-            }
-        );
-    }
-
-    var createHeaders = function(apiToken) {
-        return {
-            'User-Agent': 'thelemic',
-            'Accept': 'application/vnd.github.machine-man-preview+json',
-            'Authorization': 'token ' + apiToken
-        };
-    }
     
     function createRepositoryByTemplate(req, res) {
         var err = false;
@@ -57,7 +32,14 @@ module.exports = function (config) {
 
         var installationId = req.user.installations[orgName];
         
-        createApiToken(installationId, function(apiToken) {
+        githubApp.createApiToken(installationId, function(apiToken, err) {
+            if (err) {
+                console.log("failed to retrieve api token.")
+                res.status(400)
+                res.send("could not authenticate to github")
+                return;
+            }
+
             var sequence = Sequence.create();
             sequence
                 .then(function (next) {
@@ -108,7 +90,7 @@ module.exports = function (config) {
 
     function createRepository(apiToken, orgName, repositoryConfig, end) {
         unirest.post(config.github.base + "/orgs/"+orgName+"/repos")
-            .headers(createHeaders(apiToken))
+            .headers(apiToken.headers)
             .type('json')
             .send(repositoryConfig)
             .end(end);
@@ -117,7 +99,7 @@ module.exports = function (config) {
 
     function configureBranch(apiToken, orgName, repoName, branchName, templateConfig, end) {
         unirest.put(config.github.base + "/repos/"+orgName+"/"+repoName+"/branches/"+branchName+"/protection")
-            .headers(createHeaders(apiToken))
+            .headers(apiToken.headers)
             .type('json')
             .send(templateConfig)
             .end(end);
@@ -136,7 +118,7 @@ module.exports = function (config) {
         for(var i = 0; i < labels.length; i++) {
             sequence.then(function(next) {
                 unirest.post(config.github.base + "/repos/"+orgName+"/"+repoName+"/labels")
-                    .headers(createHeaders(apiToken))
+                    .headers(apiToken.headers)
                     .type('json')
                     .send(labels[i])
                     .end(next())
