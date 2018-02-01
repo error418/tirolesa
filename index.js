@@ -1,3 +1,5 @@
+var logger = require('./log.js');
+
 var session = require('express-session')
 var express = require('express')
 var app = express()
@@ -20,7 +22,7 @@ app.use(require('body-parser').json());
 
 // configure session storage
 if (config.session.redis) {
-    console.log("configuring to use Redis as session storage")
+    logger.log("info", "configuring to use Redis as session storage")
     var redisStore = require('connect-redis')(session);
     app.use(session({ 
         secret: config.session.secret,
@@ -29,7 +31,8 @@ if (config.session.redis) {
         resave: false
     }));
 } else {
-    console.log("configuring to use LOCAL storage")
+    logger.log("info", "configuring to use LOCAL session storage")
+    logger.log("warn", "Local session storage should only be used in development")
     app.use(session({ 
         secret: config.session.secret, 
         resave: false, 
@@ -124,5 +127,5 @@ app.get('/api/orgs', ensureAuthenticated, serviceApi.listOrganizations);
 app.get('/api/template', ensureAuthenticated, serviceApi.listTemplates);
 app.post('/api/repo', ensureAuthenticated, serviceApi.createRepositoryByTemplate);
 
-console.log("Listening on http://localhost:" + config.application.port);
+logger.log("info", "Listening on http://localhost:" + config.application.port);
 app.listen(config.application.port)

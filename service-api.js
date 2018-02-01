@@ -1,3 +1,5 @@
+var logger=require('./log.js'); 
+
 var Sequence = require('sequence').Sequence;
 var unirest = require("unirest");
 
@@ -34,7 +36,7 @@ module.exports = function (config) {
         
         githubApp.createBearer(installationId, function(bearer, err) {
             if (err) {
-                console.log("failed to retrieve api token.")
+                logger.log("error", "failed to retrieve api token.")
                 res.status(400)
                 res.send("could not authenticate to github")
                 return;
@@ -47,6 +49,7 @@ module.exports = function (config) {
                         if(response.ok) {
                             next();
                         } else {
+                            logger.log("error", "failed to create repository")
                             res.status(400)
                             res.send("failed to create repository")
                         }
@@ -60,6 +63,7 @@ module.exports = function (config) {
                             if(response.ok) {
                                 next();
                             } else {
+                                logger.log("error", "failed to apply branch protection")
                                 res.status(400)
                                 res.send("failed to create repository")
                             }
@@ -108,7 +112,6 @@ module.exports = function (config) {
     function addIssueLabels(bearer, orgName, repoName, labels, end) {
 
         if(!labels) {
-            console.log("no extra labels specified.")
             end();
             return;
         }

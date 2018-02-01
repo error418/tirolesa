@@ -1,3 +1,5 @@
+var logger=require('./log.js'); 
+
 var jwt = require('jsonwebtoken');
 var fs = require('fs');
 var unirest = require("unirest");
@@ -37,7 +39,7 @@ module.exports = function (config) {
                         headers: getTokenHeaders(res.body.token)
                      }, null);
                 } else {
-                    console.log("error retrieving api token: " + res.body.message)
+                    logger.log("error", "error retrieving api token: " + res.body.message)
                     done(null, res);
                 }
             }
@@ -65,7 +67,7 @@ module.exports = function (config) {
                         resources.installations[item.login] = org.id;
                     });
                 } else {
-                    console.log("could not retrieve oauth resources: " + res.body.message)
+                    logger.log("error", "could not retrieve oauth resources: " + res.body.message)
                 }
 
                 done(resources);
