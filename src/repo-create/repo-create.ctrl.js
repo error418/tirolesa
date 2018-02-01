@@ -1,7 +1,11 @@
 angular.module("Thelemic")
 
 .controller("RepoCreateController", function($scope, $routeParams, Storage, RepoCreateService) {
+    $scope.buttonText = "Create Repository"
+
     $scope.create = function() {
+        $scope.started = true;
+
         RepoCreateService.create(
             {},
             {
@@ -12,10 +16,13 @@ angular.module("Thelemic")
                 branchTemplate: $routeParams.branchTemplateName
             },
             function(success) {
-                $scope.repoCreated = true;
+                $scope.done = true;
+                $scope.buttonText = "Repository created";
+                $scope.success = true;
             },
             function(error) {
-                console.log(error);
+                $scope.success = false;
+                $scope.error = error;
             }
         );
     };

@@ -1,15 +1,19 @@
-<button class="btn btn-primary" ng-click="create()">Create</button>
+<button class="btn btn-primary" ng-click="create()" ng-disabled="started">
+    <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-show="started && !done"></i>
+    <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-show="success"></i>
+    {{ buttonText }}
+</button>
 
 <div class="col-xs-12" ng-show="started">
     <div>
         <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-hide="repoCreated"></i>
         <i class="fa fa-fw fa-check text-success" ng-show="repoCreated"></i>
 
-        Creating Repository 
+        
     </div>
 
     <div>
-        <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-hide="branchConfigured"></i>
+        
         <i class="fa fa-fw fa-check text-success" ng-show="branchConfigured"></i>
 
         Applying Branch protection
