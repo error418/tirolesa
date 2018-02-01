@@ -1,12 +1,13 @@
 var jwt = require('jsonwebtoken');
-var fs = require('fs'); 
+var fs = require('fs');
+var unirest = require("unirest");
 
 module.exports = function (config) {
     var cert = fs.readFileSync(__dirname + "/" + config.github.keyFile);  // get private key
     
-    function getDefaultHeaders(apiToken) {
+    function getTokenHeaders(apiToken) {
         return {
-            'User-Agent': 'thelemic',
+            'User-Agent': config.application.name,
             'Accept': 'application/vnd.github.machine-man-preview+json',
             'Authorization': 'token ' + apiToken
         };
@@ -22,10 +23,10 @@ module.exports = function (config) {
         return token;
     }
 
-    function createApiToken(installationId, done) {
+    function createBearer(installationId, done) {
         unirest.post(config.github.base + "/installations/" + installationId + "/access_tokens")
             .headers({
-                'User-Agent': 'thelemic',
+                'User-Agent': config.application.name,
                 'Accept': 'application/vnd.github.machine-man-preview+json',
                 'Authorization': 'Bearer ' + createJWT()
             })
@@ -33,18 +34,48 @@ module.exports = function (config) {
                 if(res.ok) {
                     done({
                         token: res.body.token,
-                        headers: getDefaultHeaders(res.body.token)
+                        headers: getTokenHeaders(res.body.token)
                      }, null);
                 } else {
-                    console.log("error retrieving api token")
+                    console.log("error retrieving api token: " + res.body.message)
                     done(null, res);
                 }
             }
         );
     }
 
+    function getOAuthResources(accessToken, done) {
+        unirest.get(config.github.base + "/user/installations")
+            .headers(getTokenHeaders(accessToken))
+            .end(function (response) {
+                var resources = {
+                    orgs: [],
+                    installations: {}
+                };
+
+                if (response.ok) {
+                    response.body.installations.forEach(function(org) {
+                        var item = {
+                            login: org.account.login,
+                            type: org.account.type,
+                            avatar: org.account.avatar_url
+                        };
+                
+                        resources.orgs.push(item);
+                        resources.installations[item.login] = org.id;
+                    });
+                } else {
+                    console.log("could not retrieve oauth resources: " + res.body.message)
+                }
+
+                done(resources);
+            });
+    }
+
     return {
         createJWT: createJWT,
-        createApiToken: createApiToken
+        createBearer: createBearer,
+        getTokenHeaders: getTokenHeaders,
+        getOAuthResources: getOAuthResources
     };
 };

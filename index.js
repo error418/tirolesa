@@ -12,6 +12,7 @@ var yaml = require("yamljs")
 var config = yaml.load('config.yml')
 
 var serviceApi = require('./service-api')(config)
+var githubApp = require("./github-app")(config);
 
 
 app.use(require('body-parser').urlencoded({ extended: true }));
@@ -69,26 +70,13 @@ passport.use(new GitHubStrategy({
         installations: {}
     };
 
-    unirest.get(config.github.base + "/user/installations")
-    .headers({
-        'User-Agent': 'thelemic',
-        'Accept': 'application/vnd.github.machine-man-preview+json',
-        "Authorization": "token " + accessToken
-    })
-    .end(function (res) {
-        res.body.installations.forEach(function(org) {
-            var item = {
-                login: org.account.login,
-                type: org.account.type,
-                avatar: org.account.avatar_url
-            };
+    githubApp.getOAuthResources(accessToken, function (resources) {
+        user.orgs = resources.orgs;
+        user.installations = resources.installations;
 
-            user.orgs.push(item);
-            user.installations[item.login] = org.id;
-        });
-        
         return done(null, user);
-    })
+    });
+    
 
   }
 ));
@@ -118,7 +106,7 @@ app.get('/auth/github', passport.authenticate('github', {
 }));
 
 app.get('/auth/github/callback', 
-    passport.authenticate('github', { failureRedirect: '/login' }),
+    passport.authenticate('github', { failureRedirect: '/' }),
     function(req, res) {
         res.redirect('/');
     }
@@ -136,5 +124,5 @@ app.get('/api/orgs', ensureAuthenticated, serviceApi.listOrganizations);
 app.get('/api/template', ensureAuthenticated, serviceApi.listTemplates);
 app.post('/api/repo', ensureAuthenticated, serviceApi.createRepositoryByTemplate);
 
-console.log("Listening on http://localhost:" + config.endpoint.port);
-app.listen(config.endpoint.port)
+console.log("Listening on http://localhost:" + config.application.port);
+app.listen(config.application.port)

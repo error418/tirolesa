@@ -11,15 +11,16 @@ _anchors:
 
 
 # Configuration
-endpoint:
+application:
+  name: Thelemic
   port: 3000 # application port
 session: # defaults to local session storage, if 'redis' is not configured
   secret: keyboard cat # please change this :)
-  redis: # for configuration options see https://github.com/tj/connect-redis#options
-    host: localhost
-    port: 4500 # 6379
-    ttl: 30000
-    logErrors: true
+#  redis: # for configuration options see https://github.com/tj/connect-redis#options
+#    host: localhost
+#    port: 6379
+#    ttl: 30000 # session ttl
+#    logErrors: true
 
 
 github:
@@ -28,7 +29,7 @@ github:
     secret: 
   appId:  # github app id
   keyFile: github-app.pem
-  base: http://localhost:6000 # https://api.github.com
+  base: https://api.github.com
 
 template:
 

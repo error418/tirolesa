@@ -32,7 +32,7 @@ module.exports = function (config) {
 
         var installationId = req.user.installations[orgName];
         
-        githubApp.createApiToken(installationId, function(apiToken, err) {
+        githubApp.createBearer(installationId, function(bearer, err) {
             if (err) {
                 console.log("failed to retrieve api token.")
                 res.status(400)
@@ -43,7 +43,7 @@ module.exports = function (config) {
             var sequence = Sequence.create();
             sequence
                 .then(function (next) {
-                    createRepository(apiToken, orgName, repoTemplate.config, function (response) {
+                    createRepository(bearer, orgName, repoTemplate.config, function (response) {
                         if(response.ok) {
                             next();
                         } else {
@@ -56,7 +56,7 @@ module.exports = function (config) {
                     if (!branchTemplate.config || !branchTemplate.branch) {
                         next();
                     } else {
-                        configureBranch(apiToken, orgName, repoName, branchTemplate.branch, branchTemplate.config, function (response) {
+                        configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config, function (response) {
                             if(response.ok) {
                                 next();
                             } else {
@@ -67,7 +67,7 @@ module.exports = function (config) {
                     }
                 })
                 .then(function(next) {
-                    addIssueLabels(apiToken, orgName, repoName, repoTemplate.label, function () {
+                    addIssueLabels(bearer, orgName, repoName, repoTemplate.label, function () {
                         next(); // TODO: error handling
                     })
                 })
@@ -88,24 +88,24 @@ module.exports = function (config) {
     }
     
 
-    function createRepository(apiToken, orgName, repositoryConfig, end) {
+    function createRepository(bearer, orgName, repositoryConfig, end) {
         unirest.post(config.github.base + "/orgs/"+orgName+"/repos")
-            .headers(apiToken.headers)
+            .headers(bearer.headers)
             .type('json')
             .send(repositoryConfig)
             .end(end);
     }
 
 
-    function configureBranch(apiToken, orgName, repoName, branchName, templateConfig, end) {
+    function configureBranch(bearer, orgName, repoName, branchName, templateConfig, end) {
         unirest.put(config.github.base + "/repos/"+orgName+"/"+repoName+"/branches/"+branchName+"/protection")
-            .headers(apiToken.headers)
+            .headers(bearer.headers)
             .type('json')
             .send(templateConfig)
             .end(end);
     }
 
-    function addIssueLabels(apiToken, orgName, repoName, labels, end) {
+    function addIssueLabels(bearer, orgName, repoName, labels, end) {
 
         if(!labels) {
             console.log("no extra labels specified.")
@@ -118,7 +118,7 @@ module.exports = function (config) {
         for(var i = 0; i < labels.length; i++) {
             sequence.then(function(next) {
                 unirest.post(config.github.base + "/repos/"+orgName+"/"+repoName+"/labels")
-                    .headers(apiToken.headers)
+                    .headers(bearer.headers)
                     .type('json')
                     .send(labels[i])
                     .end(next())
