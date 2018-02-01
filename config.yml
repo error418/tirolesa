@@ -1,6 +1,8 @@
-# References for later use in the yaml.
+### Thelemic configuration file
+
+# you can define your yaml anchors here for easier access in your configuration
 _anchors:
-  labels:
+  _labels:
     - &label-security
       name: "security" 
       color: "ff0000"
@@ -10,44 +12,59 @@ _anchors:
 
 
 
-# Configuration
+# Basic Application configuration
 application:
   name: Thelemic
   port: 3000 # application port
-session: # defaults to local session storage, if 'redis' is not configured
-  secret: keyboard cat # please change this :)
+
+# Session Configuration
+session:
+  secret: keyboard cat # please change this for your own security :)
+
+## Comment following lines in for storing sessions to a redis database. 
+## the application defaults to local session storage, if 'redis' is not configured
+#
 #  redis: # for configuration options see https://github.com/tj/connect-redis#options
 #    host: localhost
 #    port: 6379
 #    ttl: 30000 # session ttl
 #    logErrors: true
+#
 
 
+## GitHub App configuration
 github:
   oauth: # GitHub App OAuth settings
-    id: 
-    secret: 
-  appId:  # github app id
-  keyFile: github-app.pem
-  base: https://api.github.com
+    id: # the open auth id of your GitHub app
+    secret: # the open auth secret of your GitHub app
+  appId: # The AppId of your GitHub app instance (not installation!)
+  keyFile: github-app.pem # the key file of your GitHub App (you retrieve this from the App settings page)
+  base: https://api.github.com # Github Api base url
 
+
+## Template configuration
+##
+## The templates you define here will be selectable by the user.
 template:
 
+  # Repository type templates
+  # You can define multiple types of Repository templates containing different settings
+  # The templates 'default' and 'private' are examples
   repo:
     default:
-      name: "Default"
+      name: "Default" # display name of the template
       pattern: "^[A-Za-z\\-_]+$" # repository name pattern
       config: &default-repo
-        private: false
-        has_issues: true
-        has_projects: false
-        has_wiki: true
+        private: false # is Repository private
+        has_issues: true # enable GitHub issues
+        has_projects: false # enable GitHub projects
+        has_wiki: true # enable GitHub wiki
         allow_squash_merge: true
         allow_merge_commit: true
         allow_rebase_merge: true
         auto_init: true # is required to be true; otherwise no branch settings can be applied
         gitignore_template: "Gradle" # see https://github.com/github/gitignore
-      label:
+      label: # you can define additional labels to be added to the repository
         - *label-security
         - *label-docs
     private:
@@ -57,9 +74,11 @@ template:
         private: true
       label:
         - *label-docs
-    
+  
+  # Branch templates
+  # You can define multiple branch configuration templates.
   branch:
-    none:
+    none: # leave this template in, if you want to allow repositories without branch protection
       name: "None"
       branch: null
       config: null
