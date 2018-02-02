@@ -1,4 +1,4 @@
-angular.module("Thelemic")
+angular.module("limnetic")
 
 .controller("RepoCreateController", function($scope, $routeParams, Storage, RepoCreateService) {
     $scope.buttonText = "Create Repository"

@@ -1,5 +1,5 @@
 {
-  "name": "thelemic",
+  "name": "limnetic",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/error418/thelemic.git"
+    "url": "git+https://github.com/error418/limnetic.git"
   },
   "keywords": [
     "github",
@@ -18,9 +18,9 @@
   "author": "Michael Gerbig",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/error418/thelemic/issues"
+    "url": "https://github.com/error418/limnetic/issues"
   },
-  "homepage": "https://github.com/error418/thelemic#readme",
+  "homepage": "https://github.com/error418/limnetic#readme",
   "dependencies": {
     "angular": "^1.6.7",
     "angular-animate": "^1.6.7",

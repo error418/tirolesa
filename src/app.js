@@ -1,4 +1,4 @@
-angular.module("Thelemic", ["ngResource", "ngRoute", "ngAnimate", "ui.bootstrap"])
+angular.module("limnetic", ["ngResource", "ngRoute", "ngAnimate", "ui.bootstrap"])
 
 .config(
     function($routeProvider, $locationProvider) {

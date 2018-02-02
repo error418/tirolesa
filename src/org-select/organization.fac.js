@@ -1,4 +1,4 @@
-angular.module("Thelemic")
+angular.module("limnetic")
 
 .factory("OrganizationService", function($resource) {
     return $resource('/api/orgs', {}, {

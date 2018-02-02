@@ -1,4 +1,4 @@
-angular.module("Thelemic")
+angular.module("limnetic")
 
 .controller("OrgSelectController", function($scope, AuthService, OrganizationService) {
     $scope.auth = AuthService.info(

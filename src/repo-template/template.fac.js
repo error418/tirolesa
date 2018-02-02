@@ -1,4 +1,4 @@
-angular.module("Thelemic")
+angular.module("limnetic")
 
 .factory("TemplateService", function($resource) {
     return $resource('/api/template', {}, {

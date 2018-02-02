@@ -1,4 +1,4 @@
-angular.module("Thelemic")
+angular.module("limnetic")
 
 .controller("RepoTemplateController", function($scope, $routeParams, $location, Storage, TemplateService) {
     $scope.repoName = "";

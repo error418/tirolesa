@@ -1,4 +1,4 @@
-angular.module("Thelemic")
+angular.module("limnetic")
 
 .factory("AuthService", function($resource) {
     return $resource('/api/auth', {}, {

@@ -78,7 +78,7 @@ module.exports = function (config) {
 
     function createRepository(orgName, repositoryConfig, end) {
         unirest.post(config.github.base + "/orgs/"+orgName+"/repos")
-            .headers({'User-Agent': 'thelemic'})
+            .headers({'User-Agent': 'limnetic'})
             .type('json')
             .auth("", config.github.api.token)
             .send(repositoryConfig)
@@ -88,7 +88,7 @@ module.exports = function (config) {
 
     function configureBranch(orgName, repoName, branchName, templateConfig, end) {
         unirest.put(config.github.base + "/repos/"+orgName+"/"+repoName+"/branches/"+branchName+"/protection")
-            .headers({'User-Agent': 'thelemic'})
+            .headers({'User-Agent': 'limnetic'})
             .type('json')
             .auth("", config.github.api.token)
             .send(templateConfig)
