@@ -5,9 +5,12 @@
         <form name="repoForm">
             <div class="input-group input-group-lg repo-name-input">
                 <span class="input-group-addon">{{ orgName }}/</span>
-                <input name="name" type="text" class="form-control" placeholder="Your Repo Name" ng-pattern="repoTemplate.pattern" ng-required="true" ng-model="repoName">
+                <input name="name" type="text" class="form-control" placeholder="Your Repo Name" ng-pattern="selectedRepoTemplate.pattern" ng-required="true" ng-model="repoName">
             </div>
         </form>
+        <div class="pattern-error"  ng-show="repoForm.name.$error.pattern">
+            Please match name template {{ selectedRepoTemplate.pattern }}
+        </div>
     </div>
 
     <div class="col-xs-12 summary">
@@ -71,8 +74,10 @@
         </div>
     </div>
 
-    <div class="col-xs-12">
-        <button class="btn btn-primary next" ng-click="next()" ng-disabled="!repoForm.name.$valid">Next</a>
-    </div>
+    <button class="btn" ng-class="{'btn-primary': !done, 'btn-success': success}" ng-click="create()" ng-disabled="!repoForm.name.$valid || started">
+        <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-show="started && !done"></i>
+        <i class="fa fa-check-circle fa-fw" ng-show="success"></i>
+        {{ buttonText }}
+    </button>
 
 </div>

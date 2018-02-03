@@ -38,7 +38,29 @@ angular.module("limnetic")
         };
     };
 
-    $scope.next = function() {
-        $location.path("/create/" + $routeParams.orgName + "/" + $scope.repoName + "/" + $scope.selectedRepoTemplate.$key + "/" + $scope.selectedBranchTemplate.$key);
+    $scope.buttonText = "Create Repository"
+
+    $scope.create = function() {
+        $scope.started = true;
+
+        RepoCreateService.create(
+            {},
+            {
+                orgName: $routeParams.orgName,
+                repoName: $scope.repoName,
+                config: $routeParams.repoName,
+                repoTemplate: $scope.selectedRepoTemplate.$key,
+                branchTemplate: $scope.selectedBranchTemplate.$key
+            },
+            function(success) {
+                $scope.done = true;
+                $scope.buttonText = "Repository created";
+                $scope.success = true;
+            },
+            function(error) {
+                $scope.success = false;
+                $scope.error = error;
+            }
+        );
     };
 });
