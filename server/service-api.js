@@ -1,5 +1,4 @@
-var logger=require('./log.js'); 
-
+var logger = require('./log.js'); 
 var Sequence = require('sequence').Sequence;
 var unirest = require("unirest");
 

@@ -5,7 +5,7 @@ var fs = require('fs');
 var unirest = require("unirest");
 
 module.exports = function (config) {
-    var cert = fs.readFileSync(__dirname + "/" + config.github.keyFile);  // get private key
+    var cert = fs.readFileSync(config.github.keyFile);  // get private key
     
     function getTokenHeaders(apiToken) {
         return {

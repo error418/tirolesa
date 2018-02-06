@@ -1,12 +1,8 @@
 var express = require('express')
 var app = express()
-
-
 var unirest = require("unirest")
-
 var yaml = require("yamljs")
 var config = yaml.load('config.yml')
-
 var serviceApi = require('./service-api')(config)
 
 
@@ -15,20 +11,14 @@ app.use(require('body-parser').json());
 
 app.use('/css/', express.static('node_modules/font-awesome/css'));
 app.use('/js/', express.static('node_modules/bootstrap/dist/js'));
-
 app.use('/lib/', express.static('node_modules/angular-ui-bootstrap/dist'));
-
 app.use('/js/', express.static('node_modules/jquery/dist'));
 app.use('/js/', express.static('node_modules/angular'));
 app.use('/js/', express.static('node_modules/angular-animate'));
 app.use('/js/', express.static('node_modules/angular-resource'));
 app.use('/js/', express.static('node_modules/angular-route'));
-
 app.use('/fonts/', express.static('node_modules/font-awesome/fonts'));
-
 app.use('/', express.static('dist'));
-
-
 
 app.get('/api/auth', function (req, res) {
     var result = {
