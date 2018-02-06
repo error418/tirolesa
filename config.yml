@@ -1,4 +1,4 @@
-### limnetic configuration file
+### tirolesa configuration file
 
 # you can define your yaml anchors here for easier access in your configuration
 _anchors:
@@ -14,7 +14,7 @@ _anchors:
 
 # Basic Application configuration
 application:
-  name: limnetic
+  name: tirolesa
   port: 3000 # application port
 
 # Session Configuration
@@ -53,7 +53,7 @@ template:
   repo:
     default:
       name: "Default" # display name of the template
-      pattern: "^[A-Za-z\\-_]+$" # repository name pattern
+      pattern: "^[A-Za-z][A-Za-z\\-_]+[A-Za-z]+$" # repository name pattern
       config: &default-repo
         private: false # is Repository private
         has_issues: true # enable GitHub issues

@@ -1,4 +1,4 @@
-# limnetic
+# tirolesa
 
 
 
@@ -18,20 +18,20 @@ This may include for example:
 Defining templates and having a singe access point, which handles the repository creation
 is a solution to this.
 
-limnetic offers a self-service to organization members to create repositories using templates.
+tirolesa offers a self-service to organization members to create repositories using templates.
 Just choose the template matching your needs and put a repository name on it -
-limnetic will do the configuration work for you.
+tirolesa will do the configuration work for you.
 
 ## Setup
 
-limnetic is a `GitHub App`. You need to *"install"* limnetic on your organization and grant some rights to it,
-so it can do the dirty work for you. Actions performed by limnetic are marked with a `bot` tag in the GitHub UI.
+tirolesa is a `GitHub App`. You need to *"install"* tirolesa on your organization and grant some rights to it,
+so it can do the dirty work for you. Actions performed by tirolesa are marked with a `bot` tag in the GitHub UI.
 
 ### GitHub Enterprise Seats / Technical User
 
-Since limnetic is a GitHub App you won't need to waste a precious seat on a technical user. Yay!
+Since tirolesa is a GitHub App you won't need to waste a precious seat on a technical user. Yay!
 
-## I want to host my own limnetic
+## I want to host my own tirolesa
 
 No Problem!
 
@@ -46,11 +46,11 @@ You can edit the configuration file `config.yml` to customize stuff to your liki
 
 ### Templates
 
-Templates enable you to define a set of repository configurations. A organization member can choose a template from this set when creating a repository using limnetic.
+Templates enable you to define a set of repository configurations. A organization member can choose a template from this set when creating a repository using tirolesa.
 
 #### Repository Templates
 
-Repository templates configure basic settings of the created repository. If you inspect the data structure of the `config` property, you will notice similarities to the [GitHub API](https://developer.github.com/v3/repos/#input). You can set every property described in the linked API documentation inside `config`. Be aware, that not every property will be displayed to the user in the limnetic web interface.
+Repository templates configure basic settings of the created repository. If you inspect the data structure of the `config` property, you will notice similarities to the [GitHub API](https://developer.github.com/v3/repos/#input). You can set every property described in the linked API documentation inside `config`. Be aware, that not every property will be displayed to the user in the tirolesa web interface.
 
 ##### Configurable Properties
 
@@ -69,7 +69,7 @@ Branch templates configure the initial branch protection settings of the reposit
 
 ## Technobabble
 
-limnetic is written in `NodeJS` (backend) and `AngularJS` (frontend)
+tirolesa is written in `NodeJS` (backend) and `AngularJS` (frontend)
 
 ## Supporting the project
 

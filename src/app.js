@@ -1,4 +1,4 @@
-angular.module("limnetic", ["ngResource", "ngRoute", "ngAnimate", "ui.bootstrap"])
+angular.module("tirolesa", ["ngResource", "ngRoute", "ngAnimate", "ui.bootstrap"])
 
 .config(
     function($routeProvider, $locationProvider) {

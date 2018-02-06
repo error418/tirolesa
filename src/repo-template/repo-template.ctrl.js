@@ -1,4 +1,4 @@
-angular.module("limnetic")
+angular.module("tirolesa")
 
 .controller("RepoTemplateController", function($scope, $routeParams, $location, Storage, TemplateService) {
     $scope.repoName = "";

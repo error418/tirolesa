@@ -1,4 +1,4 @@
-angular.module("limnetic")
+angular.module("tirolesa")
 
 .factory("TemplateService", function($resource) {
     return $resource('/api/template', {}, {

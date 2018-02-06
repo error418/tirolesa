@@ -1,4 +1,4 @@
-angular.module("limnetic")
+angular.module("tirolesa")
 
 .factory("AuthService", function($resource) {
     return $resource('/api/auth', {}, {
