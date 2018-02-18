@@ -67,6 +67,7 @@
                     <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.branch)"></i> Protects branch {{selectedBranchTemplate.branch}}</li>
                     <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.required_status_checks.strict)"></i> requires Status-Checks</li>
                     <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.required_pull_request_reviews)"></i> requires Pull-Request Reviews</li>
+                    <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.required_pull_request_reviews.require_code_owner_reviews)"></i> requires Code-Owner Reviews</li>
                     <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.required_pull_request_reviews.dismiss_stale_reviews)"></i> dismiss stale Reviews</li>
                     <li><i class="fa fa-fw" ng-class="indicator(selectedBranchTemplate.config.enforce_admins)"></i> enforce rules for admins</li>
                 </ul>
