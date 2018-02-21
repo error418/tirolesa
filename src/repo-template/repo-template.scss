@@ -1,9 +1,26 @@
 .repo-template {
+    h3 {
+        i.fa {
+            float:right;
+            opacity: 0.3;
+        }
+    }
+
     ul.features {
         list-style-type: none;
     }
 
+    .pattern-error {
+        padding-left: 10px;
+        font-size: 90%;
+    }
+
     .summary {
+        h3 {
+            border-bottom: 1px #ddd solid;
+            padding-bottom: 3px;
+        }
+
         padding-top: 20px;
         padding-bottom: 20px;
     }
@@ -17,6 +34,17 @@
 
         input, span {
             border: none;
+        }
+    }
+
+    .repo-properties {
+        .panel {
+            min-height: 200px;
+        }
+        .panel-heading {
+            padding-top: 3px;
+            padding-bottom: 3px;
+            font-weight: bold
         }
     }
 

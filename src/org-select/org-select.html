@@ -1,11 +1,20 @@
 <div class="start-controller" ng-show="auth.$resolved">
     <div class="col-xs-12" ng-hide="auth.success">
-        Please log in to proceed
-        <a href="./auth/github" class="btn btn-primary">Authenticate with GitHub</a>
+        <div class="jumbotron">
+            <h1>Create Repositories</h1>
+            <p>Tirolesa lets you create repositories using repository templates. You are almost there.</p>
+            <p>Please authenticate via GitHub to see your available GitHub organizations.</p>
+            <p>
+                <a href="./auth/github" class="btn btn-lg btn-primary"><i class="fa fa-fw fa-github"></i> Authenticate via GitHub</a>
+            </p>
+        </div>
     </div>
 
     <div class="col-xs-12" ng-show="auth.success">
-        <h1>Choose your destiny</h1>
+        <h1>Choose Organization</h1>
+        <p>
+            Create a repository in one of the following organizations
+        </p>
         <div class="list-group org-list">
             <a href="#!/org/{{ org.login }}" class="list-group-item" ng-repeat="org in orgs" uib-tooltip="{{ org.description }}" tooltip-popup-delay="750" tooltip-placement="top-right">
                 <img class="avatar" ng-src="{{ org.avatar }}" />
