@@ -133,11 +133,13 @@
                 <p ng-show="repoName">After clicking this button your repository <strong>{{ orgName }}/{{ repoName }}</strong> will be created. This is the time to double-check your inputs.</p>
                 <p ng-hide="repoName"><i class="fa fa-fw fa-exclamation-circle text-danger"></i> You need to set a name for your repository</p>
                 <button class="btn" ng-class="{'btn-warning': !done, 'btn-success': success}" ng-click="create()" ng-disabled="!repoForm.name.$valid || started">
-                    <i class="fa fa-fw fa-magic" ng-hide="done"></i>
-                    <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-show="started && !done"></i>
+                    <i class="fa fa-fw fa-magic" ng-hide="started"></i>
+                    <i class="fa fa-circle-o-notch fa-spin fa-fw" ng-show="started && !done && !success"></i>
                     <i class="fa fa-check-circle fa-fw" ng-show="success"></i>
                     {{ buttonText }}
                 </button>
+
+                <a ng-show="success" ng-href="{{ createdRepository.html_url }}" class="btn btn-success">View created repository</a>
             </div>
         </div>
     </div>  

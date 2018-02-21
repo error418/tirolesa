@@ -41,11 +41,14 @@ module.exports = function (config) {
                 return;
             }
 
+            var serviceResponse = {};
+
             var sequence = Sequence.create();
             sequence
                 .then(function (next) {
                     createRepository(bearer, orgName, repoTemplate.config, function (response) {
                         if(response.ok) {
+                            serviceResponse.html_url = response.body.html_url;
                             next();
                         } else {
                             logger.log("error", "failed to create repository")
@@ -76,7 +79,7 @@ module.exports = function (config) {
                 })
                 .then(function () {
                     res.status(200);
-                    res.send();
+                    res.send(serviceResponse);
                 });
             }
         );

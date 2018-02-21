@@ -1,6 +1,6 @@
 angular.module("tirolesa")
 
-.controller("RepoTemplateController", function($scope, $routeParams, $location, Storage, TemplateService) {
+.controller("RepoTemplateController", function($scope, $routeParams, $location, Storage, TemplateService, RepoCreateService) {
     $scope.repoName = "";
     $scope.orgName = $routeParams.orgName;
 
@@ -56,6 +56,7 @@ angular.module("tirolesa")
                 $scope.done = true;
                 $scope.buttonText = "Repository created";
                 $scope.success = true;
+                $scope.createdRepository = success;
             },
             function(error) {
                 $scope.success = false;
