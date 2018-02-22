@@ -33,6 +33,7 @@ session:
 
 
 ## GitHub App configuration
+#   You can configure these settings via environment variables
 github:
   oauth: # GitHub App OAuth settings
     id:  # the open auth id of your GitHub app
