@@ -2,8 +2,9 @@ var express = require('express')
 var app = express()
 var unirest = require("unirest")
 var yaml = require("yamljs")
-var config = yaml.load('config.yml')
+var config = require("../server/config")
 var serviceApi = require('./service-api')(config)
+var logger = require('../server/log')
 
 
 app.use(require('body-parser').urlencoded({ extended: true }));
@@ -38,5 +39,5 @@ app.get('/api/orgs', ensureAuthenticated, serviceApi.listOrganizations);
 app.get('/api/template', ensureAuthenticated, serviceApi.listTemplates);
 app.post('/api/repo', ensureAuthenticated, serviceApi.createRepositoryByTemplate);
 
-console.log("Listening on http://localhost:" + config.endpoint.port);
-app.listen(config.endpoint.port)
+logger.log("info", "Mock server listening on http://localhost:" + config.application.port);
+app.listen(config.application.port)

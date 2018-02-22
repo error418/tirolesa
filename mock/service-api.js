@@ -1,6 +1,6 @@
 var Sequence = require('sequence').Sequence;
 var unirest = require("unirest");
-
+var logger = require('../server/log')
 
 module.exports = function (config) {
     
@@ -27,27 +27,25 @@ module.exports = function (config) {
         sequence
             .then(function (next) {
                 createRepository(orgName, repoTemplate.config, function (response) {
-                    if(response.ok) {
+                    logger.log("info", "received create repo request")
+                    setTimeout(function() {
                         next();
-                    } else {
-                        res.status(400)
-                        res.send("failed to create repository")
-                    }
+                    }, 1500);
                 })
             })
             .then(function (next) {
                 configureBranch(orgName, repoName, branchTemplate.branch, branchTemplate.config, function (response) {
-                    if(response.ok) {
+                    logger.log("info", "received configure branch request")
+                    setTimeout(function() {
                         next();
-                    } else {
-                        res.status(400)
-                        res.send("failed to create repository")
-                    }
+                    }, 1500);
                 })
             })
             .then(function () {
-                res.status(200);
-                res.send();
+                res.status(500);
+
+                //res.send({ html_url: "none" });
+                res.send({ message: "failed on something" })
             });
     }
 
@@ -77,22 +75,12 @@ module.exports = function (config) {
     
 
     function createRepository(orgName, repositoryConfig, end) {
-        unirest.post(config.github.base + "/orgs/"+orgName+"/repos")
-            .headers({'User-Agent': 'tirolesa'})
-            .type('json')
-            .auth("", config.github.api.token)
-            .send(repositoryConfig)
-            .end(end);
+        end()
     }
 
 
     function configureBranch(orgName, repoName, branchName, templateConfig, end) {
-        unirest.put(config.github.base + "/repos/"+orgName+"/"+repoName+"/branches/"+branchName+"/protection")
-            .headers({'User-Agent': 'tirolesa'})
-            .type('json')
-            .auth("", config.github.api.token)
-            .send(templateConfig)
-            .end(end);
+        end()
     }
 
     return {
