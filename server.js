@@ -4,8 +4,7 @@ var express = require('express')
 var app = express()
 var unirest = require("unirest")
 
-var yaml = require("yamljs")
-var config = yaml.load('config.yml')
+var config = require('./server/config')
 var serviceApi = require('./server/service-api')(config)
 var passport = require('./server/oauth')(config)
 
