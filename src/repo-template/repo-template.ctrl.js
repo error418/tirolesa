@@ -54,13 +54,15 @@ angular.module("tirolesa")
             },
             function(success) {
                 $scope.done = true;
-                $scope.buttonText = "Repository created";
                 $scope.success = true;
+                $scope.buttonText = "Repository created";
                 $scope.createdRepository = success;
             },
             function(error) {
+                $scope.done = true;
                 $scope.success = false;
-                $scope.error = error;
+                $scope.error = error.data;
+                $scope.buttonText = "Failed to create repository"
             }
         );
     };

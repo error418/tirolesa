@@ -53,7 +53,9 @@ module.exports = function (config) {
                         } else {
                             logger.log("error", "failed to create repository")
                             res.status(400)
-                            res.send("failed to create repository")
+                            res.send({
+                                message: "failed to create repository"
+                            })
                         }
                     })
                 })
@@ -67,7 +69,9 @@ module.exports = function (config) {
                             } else {
                                 logger.log("error", "failed to apply branch protection")
                                 res.status(400)
-                                res.send("failed to create repository")
+                                res.send({
+                                    message: "failed to apply branch protection to repository"
+                                })
                             }
                         })
                     }
