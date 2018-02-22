@@ -3,8 +3,9 @@ var logger=require('./log.js');
 var jwt = require('jsonwebtoken');
 var fs = require('fs');
 var unirest = require("unirest");
+var config = require("./config");
 
-module.exports = function (config) {
+module.exports = function () {
     var cert = fs.readFileSync(config.github.keyFile);  // get private key
     
     function getTokenHeaders(apiToken) {
