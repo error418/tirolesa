@@ -1,8 +1,7 @@
-var passport = require("passport")
 var GitHubStrategy = require("passport-github2")
 var config = require("./config");
 
-module.exports = function () {
+module.exports = function (passport) {
 
     var githubApp = require("./github-app");
 

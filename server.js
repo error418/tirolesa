@@ -6,8 +6,13 @@ var unirest = require("unirest")
 
 var config = require('./server/config')
 var serviceApi = require('./server/service-api')(config)
-var passport = require('./server/oauth')(config)
+var passport = require("passport")
 
+var passportConfigurer = require('./server/oauth')
+
+
+// configure passport for GitHub OAuth
+passportConfigurer(passport)
 
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('body-parser').json());
