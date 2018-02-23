@@ -3,11 +3,10 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var config = require('../../server/config')
 var unirest = require('unirest')
-var logger = require('../../server/log')
 
 var uut = require("../../server/github-app")()
 
-describe('Github OAuth', function() {
+describe('Github Apps', function() {
     var sandbox = sinon.createSandbox();
     var token = "tokentestcontent"
     var unirestMock, mockResponse

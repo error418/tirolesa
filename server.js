@@ -8,7 +8,7 @@ var config = require('./server/config')
 var serviceApi = require('./server/service-api')(config)
 var passport = require("passport")
 
-var passportConfigurer = require('./server/oauth')
+var passportConfigurer = require('./server/passport-oauth')
 
 
 // configure passport for GitHub OAuth
