@@ -3,10 +3,14 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var config = require('../../server/config')
 var unirest = require('unirest')
+var jwt = require('jsonwebtoken');
+var fs = require('fs');
 
-var uut = require("../../server/github-app")()
+var GithubApp = require("../../server/github-app")
 
 describe('Github Apps', function() {
+    var uut;
+
     var sandbox = sinon.createSandbox();
     var token = "tokentestcontent"
     var unirestMock, mockResponse
@@ -26,8 +30,16 @@ describe('Github Apps', function() {
             }
         }
 
+        // mock private key
+        sandbox.stub(fs, "readFileSync")
+
+        // mock jwt signing
+        sandbox.stub(jwt, "sign")
+
         sandbox.stub(unirest, "post").returns(unirestMock);
         sandbox.stub(unirest, "get").returns(unirestMock)
+        
+        uut = GithubApp()
     });
 
     afterEach(function() {
@@ -35,10 +47,10 @@ describe('Github Apps', function() {
     })
 
     it('should comply to public api', function() {
-        expect(uut.createJWT).to.be.defined
-        expect(uut.createBearer).to.be.defined
-        expect(uut.getTokenHeaders).to.be.defined
-        expect(uut.getOAuthResources).to.be.defined
+        expect(uut.createJWT).to.be.not.undefined
+        expect(uut.createBearer).to.be.not.undefined
+        expect(uut.getTokenHeaders).to.be.not.undefined
+        expect(uut.getOAuthResources).to.be.not.undefined
     })
 
     describe('HTTP Headers', function() {
@@ -53,6 +65,33 @@ describe('Github Apps', function() {
             var result = uut.getTokenHeaders(token)
             
             expect(result['Accept']).to.be.equal('application/vnd.github.machine-man-preview+json')
+        })
+    })
+
+    describe('JWT signature', function() {
+        it('should set issuer with appid', function(complete) {
+            jwt.sign.callsFake(function(payload, cert, settings) {
+                expect(payload.iss).to.be.not.undefined
+                expect(payload.iss).to.be.equal(config.github.appId)
+                complete();
+            })
+            
+            uut.createJWT()
+        })
+
+        it('should use jwt sign algorithm RS256', function(complete) {
+            jwt.sign.callsFake(function(payload, cert, settings) {
+                expect(settings.algorithm).to.be.equal("RS256")
+                complete();
+            })
+            
+            uut.createJWT()
+        })
+
+        it('should return unmodified jwt token', function() {
+            jwt.sign.returns("testtoken")
+
+            expect(uut.createJWT()).to.be.equal("testtoken")
         })
     })
 
@@ -79,7 +118,7 @@ describe('Github Apps', function() {
 
             uut.createBearer(0, function(bearer, err) {
                 expect(bearer).to.be.null
-                expect(err).to.be.defined
+                expect(err).to.be.not.undefined
                 complete()
             })
         })
@@ -92,26 +131,29 @@ describe('Github Apps', function() {
                 body: {
                     installations: [
                         {
-                        account: {
-                            login: "orgname",
-                            type: "type",
-                            avatar_url: "avatar"
+                            id: 1337,
+                            account: {
+                                login: "orgname",
+                                type: "type",
+                                avatar_url: "avatar"
+                            }
                         }
-                    }
-                ]}
+                    ]
+                }
             }
         })
 
         it('should retrieve user organizations', function(complete) {
             uut.getOAuthResources(token, function(resources) {
-                expect(resources.installations).to.be.defined
+                expect(resources.installations).to.be.not.undefined
                 expect(resources.orgs).to.be.an('array')
                 expect(resources.orgs).to.deep.include({
                     login: "orgname",
                     type: "type",
                     avatar: "avatar"
                 })
-                expect(resources.installations["orgname"]).to.be.defined
+
+                expect(resources.installations["orgname"]).to.be.not.undefined
                 complete()
             })
         })
