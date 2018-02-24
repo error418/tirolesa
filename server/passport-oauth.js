@@ -1,9 +1,10 @@
 var GitHubStrategy = require("passport-github2")
+
 var config = require("./config");
 
 module.exports = function (passport) {
 
-    var githubApp = require("./github-app");
+    var githubApp = require("./github-tokens");
 
     // OAuth configuration *******************************************************
     passport.use(new GitHubStrategy({

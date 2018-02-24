@@ -1,4 +1,5 @@
 var yaml = require("yamljs")
+
 var config = yaml.load('config.yml')
 
 // override configuration with environment variables, if available

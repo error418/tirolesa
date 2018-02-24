@@ -1,13 +1,13 @@
-var logger = require('./server/log.js');
 var session = require('express-session')
 var express = require('express')
 var app = express()
 var unirest = require("unirest")
 
+var logger = require('./server/log');
 var config = require('./server/config')
 var serviceApi = require('./server/service-api')(config)
-var passport = require("passport")
 
+var passport = require("passport")
 var passportConfigurer = require('./server/passport-oauth')
 
 
