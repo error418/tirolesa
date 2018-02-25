@@ -143,10 +143,8 @@ function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels, end) {
     })
 }
 
-module.exports = function (config) {
-    return {
-        createRepositoryByTemplate: createRepositoryByTemplate,
-        listOrganizations: listOrganizations,
-        listTemplates: listTemplates
-    };
+module.exports = {
+    createRepositoryByTemplate: createRepositoryByTemplate,
+    listOrganizations: listOrganizations,
+    listTemplates: listTemplates
 };

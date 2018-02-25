@@ -31,23 +31,7 @@ describe('Github Apps', function() {
     it('should comply to public api', function() {
         expect(uut.jwtTokenFactory).to.be.not.undefined
         expect(uut.createBearer).to.be.not.undefined
-        expect(uut.getTokenHeaders).to.be.not.undefined
         expect(uut.getOAuthResources).to.be.not.undefined
-    })
-
-    describe('HTTP Headers', function() {
-        it('should construct token contents', function() {
-            var result = uut.getTokenHeaders(token)
-            
-            expect(result['User-Agent']).to.be.equal(config.application.name)
-            expect(result['Authorization']).to.be.equal('token ' + token)
-        })
-        
-        it('should use GitHub Apps HTTP Accept mime-type', function() {
-            var result = uut.getTokenHeaders(token)
-            
-            expect(result['Accept']).to.be.equal('application/vnd.github.machine-man-preview+json')
-        })
     })
 
     describe('JWT signature token', function() {

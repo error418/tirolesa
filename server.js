@@ -5,7 +5,7 @@ var unirest = require("unirest")
 
 var logger = require('./server/log');
 var config = require('./server/config')
-var serviceApi = require('./server/service-api')(config)
+var serviceApi = require('./server/service-api')
 
 var passport = require("passport")
 var passportConfigurer = require('./server/passport-oauth')
