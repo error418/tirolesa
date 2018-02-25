@@ -4,6 +4,9 @@ var unirest = require("unirest");
 var logger = require('./log.js'); 
 var ghServiceApi = require("./github-service-api")
 
+var config = require("./config")
+var ghTokens = require("./github-tokens")()
+
 /** Creates a repository from a template
  * 
  * @param {*} req http request
@@ -36,7 +39,7 @@ function createRepositoryByTemplate(req, res) {
 
     var installationId = req.user.installations[orgName];
     
-    githubApp.createBearer(installationId, function(bearer, err) {
+    ghTokens.createBearer(installationId, function(bearer, err) {
         if (err) {
             logger.log("error", "failed to retrieve api token.")
             res.status(400)
@@ -49,15 +52,15 @@ function createRepositoryByTemplate(req, res) {
         var sequence = Sequence.create();
         sequence
             .then(function (next) {
-                ghServiceApi.createRepository(bearer, orgName, repoTemplate.config, function (response) {
-                    if(response.ok) {
-                        serviceResponse.html_url = response.body.html_url;
+                ghServiceApi.createRepository(bearer, orgName, repoTemplate.config, function (result) {
+                    if(result.ok) {
+                        serviceResponse.html_url = result.body.html_url;
                         next();
                     } else {
                         logger.log("error", "failed to create repository")
                         res.status(400)
                         res.send({
-                            message: "failed to create repository"
+                            message: "Was not able to create repository: " + result.body.message
                         })
                     }
                 })
@@ -66,21 +69,21 @@ function createRepositoryByTemplate(req, res) {
                 if (!branchTemplate.config || !branchTemplate.branch) {
                     next();
                 } else {
-                    ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config, function (response) {
-                        if(response.ok) {
+                    ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config, function (result) {
+                        if(result.ok) {
                             next();
                         } else {
                             logger.log("error", "failed to apply branch protection")
                             res.status(400)
                             res.send({
-                                message: "failed to apply branch protection to repository"
+                                message: "Was not able to apply branch protection to repository: " + result.body.message
                             })
                         }
                     })
                 }
             })
             .then(function(next) {
-                ghServiceApi.addIssueLabels(bearer, orgName, repoName, repoTemplate.label, function () {
+                createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label, function () {
                     next(); // TODO: error handling
                 })
             })
@@ -118,7 +121,7 @@ function listTemplates(req, res) {
  * @param {*} labels labels to add
  * @param {*} end done callback
  */
-function addIssueLabels(bearer, orgName, repoName, labels, end) {
+function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels, end) {
 
     if(!labels) {
         end();
@@ -129,7 +132,7 @@ function addIssueLabels(bearer, orgName, repoName, labels, end) {
     
     for(var i = 0; i < labels.length; i++) {
         sequence.then(function(next) {
-            ghServiceApi.addIssueLabel(bearer, orgName, repoName, label[i], () => {
+            ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[i], () => {
                 next()
             })
         });
@@ -141,8 +144,6 @@ function addIssueLabels(bearer, orgName, repoName, labels, end) {
 }
 
 module.exports = function (config) {
-    var githubApp = require("./github-app")(config);
-    
     return {
         createRepositoryByTemplate: createRepositoryByTemplate,
         listOrganizations: listOrganizations,

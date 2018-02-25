@@ -5,18 +5,7 @@ var logger = require('./log.js');
 var config = require("./config");
 
 var ghServiceApi = require("./github-service-api")
-
-/** Constructs GitHub App API http headers
- * 
- * @param {*} apiToken construct header for given api token
- */
-function getTokenHeaders(apiToken) {
-    return {
-        'User-Agent': config.application.name,
-        'Accept': 'application/vnd.github.machine-man-preview+json',
-        'Authorization': 'token ' + apiToken
-    };
-}
+var ghRequestHeaders = require("./github-request-headers")
 
 /** Factory for JWT token signers
  * 
@@ -46,7 +35,7 @@ function createBearerFactory(jwtTokenFactory) {
             if(!err) {
                 done({
                     token: token,
-                    headers: getTokenHeaders(token)
+                    headers: ghRequestHeaders.createTokenHeaders(token)
                 }, null);
             } else {
                 logger.log("error", "error retrieving api token: " + err.body.message)
@@ -90,7 +79,6 @@ module.exports = function() {
     return {
         jwtTokenFactory: jwtTokenFactory,
         createBearer: createBearerFactory(jwtTokenFactory),
-        getTokenHeaders: getTokenHeaders,
         getOAuthResources: getOAuthResources
     }
 }

@@ -1,5 +1,6 @@
 var unirest = require("unirest");
 var config = require("./config")
+var ghRequestHeaders = require("./github-request-headers")
 
 /** Configures a branch using the GitHub API
  * 
@@ -57,11 +58,7 @@ function addIssueLabel(bearer, orgName, repoName, label, end) {
  */
 function requestAccessTokens(installationId, jwt, end) {
     unirest.post(config.github.base + "/installations/" + installationId + "/access_tokens")
-        .headers({
-            'User-Agent': config.application.name,
-            'Accept': 'application/vnd.github.machine-man-preview+json',
-            'Authorization': 'Bearer ' + jwt
-        })
+        .headers(ghRequestHeaders.createBearerHeaders(jwt))
         .end((res) => {
             if(res.ok) {
                 end(res.body.token)
@@ -79,20 +76,14 @@ function requestAccessTokens(installationId, jwt, end) {
  */
 function requestInstallations(accessToken, end) {
     unirest.get(config.github.base + "/user/installations")
-        .headers(getTokenHeaders(accessToken))
+        .headers(ghRequestHeaders.createTokenHeaders(accessToken))
         .end(function (response) {
-            var resources = {
-                orgs: [],
-                installations: {}
-            };
-
             if (response.ok) {
                 end(response.body.installations)
             } else {
                 logger.log("error", "could not retrieve oauth resources: " + res.body.message)
+                end(null, res)
             }
-
-            end(resources);
         });
 }
 
