@@ -4,6 +4,11 @@ var unirest = require("unirest");
 var logger = require('./log.js'); 
 var ghServiceApi = require("./github-service-api")
 
+/** Creates a repository from a template
+ * 
+ * @param {*} req http request
+ * @param {*} res http response
+ */
 function createRepositoryByTemplate(req, res) {
     var err = false;
     
@@ -87,15 +92,32 @@ function createRepositoryByTemplate(req, res) {
     );
 }
 
+/** Lists organizations for the current user
+ * 
+ * @param {*} req http request
+ * @param {*} res http response
+ */
 function listOrganizations(req, res) {
     res.send(req.user.orgs)
 }
 
+/** Lists the available templates from configuration
+ * 
+ * @param {*} req http request
+ * @param {*} res http response
+ */
 function listTemplates(req, res) {
     res.send(config.template)
 }
 
-
+/** Adds issue labels from a template for a given repository
+ * 
+ * @param {*} bearer bearer token
+ * @param {*} orgName organization name
+ * @param {*} repoName repository name
+ * @param {*} labels labels to add
+ * @param {*} end done callback
+ */
 function addIssueLabels(bearer, orgName, repoName, labels, end) {
 
     if(!labels) {
