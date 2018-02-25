@@ -18,12 +18,13 @@ app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('body-parser').json());
 
 // configure session storage
-if (config.session.redis) {
+var sessionConfig = config.getSessionConfiguration()
+if (sessionConfig.redis) {
     logger.log("info", "configuring to use Redis as session storage")
     var redisStore = require('connect-redis')(session);
     app.use(session({ 
-        secret: config.session.secret,
-        store: new redisStore(config.session.redis),
+        secret: sessionConfig.secret,
+        store: new redisStore(sessionConfig.redis),
         saveUninitialized: false,
         resave: false
     }));
@@ -31,7 +32,7 @@ if (config.session.redis) {
     logger.log("info", "configuring to use LOCAL session storage")
     logger.log("warn", "Local session storage should only be used in development")
     app.use(session({ 
-        secret: config.session.secret, 
+        secret: sessionConfig.secret, 
         resave: false, 
         saveUninitialized: false 
     }));
@@ -87,5 +88,5 @@ app.get('/api/orgs', ensureAuthenticated, serviceApi.listOrganizations);
 app.get('/api/template', ensureAuthenticated, serviceApi.listTemplates);
 app.post('/api/repo', ensureAuthenticated, serviceApi.createRepositoryByTemplate);
 
-logger.log("info", "Listening on http://localhost:" + config.application.port);
-app.listen(config.application.port)
+logger.log("info", "Listening on http://localhost:" + config.getApplicationSettings().port);
+app.listen(config.getApplicationSettings().port)

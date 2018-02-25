@@ -1,5 +1,5 @@
 var unirest = require("unirest");
-var appConfig = require("./config").getApplicationSettings()
+var config = require("./config")
 var ghRequestHeaders = require("./github-request-headers")
 var logger = require("./log")
 
@@ -13,7 +13,7 @@ var logger = require("./log")
  * @param {*} end done callback
  */
 function configureBranch(bearer, orgName, repoName, branchName, templateConfig, end) {
-    unirest.put(appConfig.base + "/repos/"+orgName+"/"+repoName+"/branches/"+branchName+"/protection")
+    unirest.put(config.getGithubSettings().base + "/repos/"+orgName+"/"+repoName+"/branches/"+branchName+"/protection")
         .headers(bearer.headers)
         .type('json')
         .send(templateConfig)
@@ -28,7 +28,7 @@ function configureBranch(bearer, orgName, repoName, branchName, templateConfig, 
  * @param {*} end done callback
  */
 function createRepository(bearer, orgName, repositoryConfig, end) {
-    unirest.post(appConfig.base + "/orgs/"+orgName+"/repos")
+    unirest.post(config.getGithubSettings().base + "/orgs/"+orgName+"/repos")
         .headers(bearer.headers)
         .type('json')
         .send(repositoryConfig)
@@ -44,7 +44,7 @@ function createRepository(bearer, orgName, repositoryConfig, end) {
  * @param {*} end done callback
  */
 function addIssueLabel(bearer, orgName, repoName, label, end) {
-    unirest.post(appConfig.base + "/repos/"+orgName+"/"+repoName+"/labels")
+    unirest.post(config.getGithubSettings().base + "/repos/"+orgName+"/"+repoName+"/labels")
         .headers(bearer.headers)
         .type('json')
         .send(label)
@@ -65,7 +65,7 @@ function addIssueLabel(bearer, orgName, repoName, label, end) {
  * @param {*} end done callback
  */
 function requestAccessTokens(installationId, jwt, end) {
-    unirest.post(appConfig.base + "/installations/" + installationId + "/access_tokens")
+    unirest.post(config.getGithubSettings().base + "/installations/" + installationId + "/access_tokens")
         .headers(ghRequestHeaders.createBearerHeaders(jwt))
         .end((response) => {
             if(response.ok) {
@@ -83,7 +83,8 @@ function requestAccessTokens(installationId, jwt, end) {
  * @param {*} end done callback
  */
 function requestInstallations(accessToken, end) {
-    unirest.get(appConfig.base + "/user/installations")
+
+    unirest.get(config.getGithubSettings().base + "/user/installations")
         .headers(ghRequestHeaders.createTokenHeaders(accessToken))
         .end(function (response) {
             if (response.ok) {
