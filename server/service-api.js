@@ -130,12 +130,18 @@ function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels, end) {
 
     var sequence = Sequence.create();
     
+    labels.for
     for(var i = 0; i < labels.length; i++) {
-        sequence.then(function(next) {
-            ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[i], () => {
-                next()
-            })
-        });
+        ((item) => {
+            sequence.then(function(next) {
+                ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[item], (res, err) => {
+                    if(err) {
+                        logger.log("info", "failed to create issue label: " + err)
+                    }
+                    next()
+                })
+            });
+        })(i)
     }
     
     sequence.then(function() {

@@ -1,6 +1,7 @@
 var unirest = require("unirest");
 var config = require("./config")
 var ghRequestHeaders = require("./github-request-headers")
+var logger = require("./log")
 
 /** Configures a branch using the GitHub API
  * 
@@ -47,7 +48,14 @@ function addIssueLabel(bearer, orgName, repoName, label, end) {
         .headers(bearer.headers)
         .type('json')
         .send(label)
-        .end(end)
+        .end((res) => {
+            if(res.ok) {
+                end(res.body)
+            } else {
+                logger.log("error", "error creating issue label: " + res.body.message)
+                end(null, res);
+            }
+        })
 }
 
 /** Requests access tokens for a given GitHub App installation from GitHub
@@ -59,12 +67,12 @@ function addIssueLabel(bearer, orgName, repoName, label, end) {
 function requestAccessTokens(installationId, jwt, end) {
     unirest.post(config.github.base + "/installations/" + installationId + "/access_tokens")
         .headers(ghRequestHeaders.createBearerHeaders(jwt))
-        .end((res) => {
-            if(res.ok) {
-                end(res.body.token)
+        .end((response) => {
+            if(response.ok) {
+                end(response.body.token)
             } else {
-                logger.log("error", "error retrieving api token: " + res.body.message)
-                end(null, res);
+                logger.log("error", "error retrieving api token: " + response.body.message)
+                end(null, response);
             }
         })
 }
@@ -81,8 +89,8 @@ function requestInstallations(accessToken, end) {
             if (response.ok) {
                 end(response.body.installations)
             } else {
-                logger.log("error", "could not retrieve oauth resources: " + res.body.message)
-                end(null, res)
+                logger.log("error", "could not retrieve oauth resources: " + response.body.message)
+                end(null, response)
             }
         });
 }
