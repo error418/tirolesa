@@ -11,11 +11,11 @@ var ghRequestHeaders = require("./github-request-headers")
  * 
  * @param {*} certificate private key to sign with
  */
-function createJwtTokenFactory(certificate) {
+function createJwtTokenFactory(certificate, appId) {
     return {
         create: () => {
             var payload = {
-                iss: config.github.appId
+                iss: appId
             };
             
             var token = jwt.sign(payload, certificate, { expiresIn: "1m", algorithm: 'RS256'});
@@ -72,9 +72,10 @@ function getOAuthResources(accessToken, done) {
     })
 }
 
-module.exports = function() {
-    var certificate = fs.readFileSync(config.github.keyFile);  // get private key
-    var jwtTokenFactory = createJwtTokenFactory(certificate);
+module.exports = () => {
+    var githubConfig = config.getGithubSettings()
+    var certificate = fs.readFileSync(githubConfig.keyFile);  // get private key
+    var jwtTokenFactory = createJwtTokenFactory(certificate, githubConfig.appId);
 
     return {
         jwtTokenFactory: jwtTokenFactory,

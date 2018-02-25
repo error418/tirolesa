@@ -8,18 +8,26 @@ var fs = require('fs');
 var GithubServiceApi = require("../../server/github-service-api")
 var GithubApp = require("../../server/github-tokens")
 
-describe('Github Apps', function() {
+describe('Github Tokens', function() {
     var uut;
 
     var sandbox = sinon.createSandbox();
     var token = "tokentestcontent"
+    var mockSettings
 
     beforeEach(function() {
+        mockSettings = {
+            keyFile: "none",
+            appId: "testId"
+        }
+
         // mock private key
         sandbox.stub(fs, "readFileSync")
 
         // mock jwt signing
         sandbox.stub(jwt, "sign")
+
+        sandbox.stub(config, "getGithubSettings").returns(mockSettings)
         
         uut = GithubApp()
     });
@@ -38,7 +46,7 @@ describe('Github Apps', function() {
         it('should set issuer with appid', function(complete) {
             jwt.sign.callsFake(function(payload, cert, settings) {
                 expect(payload.iss).to.be.not.undefined
-                expect(payload.iss).to.be.equal(config.github.appId)
+                expect(payload.iss).to.be.equal(mockSettings.appId)
                 complete();
             })
             

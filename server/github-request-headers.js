@@ -6,7 +6,7 @@ var config = require("./config")
  */
 function createTokenHeaders(apiToken) {
     return {
-        'User-Agent': config.application.name,
+        'User-Agent': config.getApplicationSettings().name,
         'Accept': 'application/vnd.github.machine-man-preview+json',
         'Authorization': 'token ' + apiToken
     };
@@ -18,7 +18,7 @@ function createTokenHeaders(apiToken) {
  */
 function createBearerHeaders(jwtToken) {
     return {
-        'User-Agent': config.application.name,
+        'User-Agent': config.getApplicationSettings().name,
         'Accept': 'application/vnd.github.machine-man-preview+json',
         'Authorization': 'Bearer ' + jwtToken
     }

@@ -10,12 +10,18 @@ var passport = require("passport")
 
 describe('Passport OAuth configuration', function() {
     var sandbox = sinon.createSandbox();
+    var mockSettings
 
     beforeEach(function() {
         // required for GitHubStrategy
-        config.github.oauth.id = "test"
-        config.github.oauth.secret = "test"
-
+        mockSettings = {
+            oauth: {
+                id: "oauthId",
+                secret: "meow!"
+            }
+        }
+        
+        sandbox.stub(config, "getGithubSettings").returns(mockSettings)
         sandbox.stub(passport, "use")
     });
 

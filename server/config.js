@@ -20,4 +20,25 @@ if (process.env.REDIS_HOST) {
     }
 }
 
-module.exports = config;
+function getTemplates() {
+    return config.template
+}
+
+function getGithubSettings() {
+    return config.github
+}
+
+function getSessionConfiguration() {
+    return config.session
+}
+
+function getApplicationSettings() {
+    return config.application
+}
+
+module.exports = {
+    getTemplates: getTemplates,
+    getGithubSettings: getGithubSettings,
+    getSessionConfiguration: getSessionConfiguration,
+    getApplicationSettings: getApplicationSettings
+};
