@@ -4,7 +4,7 @@ var unirest = require("unirest");
 var logger = require('./log.js'); 
 var ghServiceApi = require("./github-service-api")
 
-var templateConfig = require("./config").getTemplates()
+var config = require("./config")
 var ghTokens = require("./github-tokens")()
 
 /** Creates a repository from a template
@@ -20,8 +20,8 @@ function createRepositoryByTemplate(req, res) {
     var repoTemplateName = req.body.repoTemplate;
     var branchTemplateName = req.body.branchTemplate;    
     
-    var repoTemplate = templateConfig.repo[repoTemplateName]
-    var branchTemplate = templateConfig.branch[branchTemplateName]
+    var repoTemplate = config.getTemplates().repo[repoTemplateName]
+    var branchTemplate = config.getTemplates().branch[branchTemplateName]
     
     repoTemplate.config.name = repoName
     
@@ -31,7 +31,7 @@ function createRepositoryByTemplate(req, res) {
         return;
     }
 
-    if (!req.user.installations[orgName]) {
+    if (!orgName || !req.user.installations[orgName]) {
         res.status(400)
         res.send("repository is not accessible")
         return;
@@ -110,7 +110,7 @@ function listOrganizations(req, res) {
  * @param {*} res http response
  */
 function listTemplates(req, res) {
-    res.send(templateConfig)
+    res.send(config.getTemplates())
 }
 
 /** Adds issue labels from a template for a given repository
@@ -130,7 +130,6 @@ function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels, end) {
 
     var sequence = Sequence.create();
     
-    labels.for
     for(var i = 0; i < labels.length; i++) {
         ((item) => {
             sequence.then(function(next) {
