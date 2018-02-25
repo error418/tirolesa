@@ -29,7 +29,7 @@ describe('Github Apps', function() {
     })
 
     it('should comply to public api', function() {
-        expect(uut.createJWT).to.be.not.undefined
+        expect(uut.jwtTokenFactory).to.be.not.undefined
         expect(uut.createBearer).to.be.not.undefined
         expect(uut.getTokenHeaders).to.be.not.undefined
         expect(uut.getOAuthResources).to.be.not.undefined
@@ -50,7 +50,7 @@ describe('Github Apps', function() {
         })
     })
 
-    describe('JWT signature', function() {
+    describe('JWT signature token', function() {
         it('should set issuer with appid', function(complete) {
             jwt.sign.callsFake(function(payload, cert, settings) {
                 expect(payload.iss).to.be.not.undefined
@@ -58,7 +58,7 @@ describe('Github Apps', function() {
                 complete();
             })
             
-            uut.createJWT()
+            uut.jwtTokenFactory.create()
         })
 
         it('should use jwt sign algorithm RS256', function(complete) {
@@ -67,13 +67,13 @@ describe('Github Apps', function() {
                 complete();
             })
             
-            uut.createJWT()
+            uut.jwtTokenFactory.create()
         })
 
         it('should return unmodified jwt token', function() {
             jwt.sign.returns("testtoken")
 
-            expect(uut.createJWT()).to.be.equal("testtoken")
+            expect(uut.jwtTokenFactory.create()).to.be.equal("testtoken")
         })
     })
 
