@@ -2,32 +2,23 @@ var assert = require('chai').assert;
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var config = require('../../server/config')
-var unirest = require('unirest')
 var jwt = require('jsonwebtoken');
 var fs = require('fs');
 
-var GithubApp = require("../../server/github-app")
+var GithubServiceApi = require("../../server/github-service-api")
+var GithubApp = require("../../server/github-tokens")
 
-describe('Github Apps', function() {
+describe('Github Tokens', function() {
     var uut;
 
     var sandbox = sinon.createSandbox();
     var token = "tokentestcontent"
-    var unirestMock, mockResponse
+    var mockSettings
 
     beforeEach(function() {
-        mockResponse = {
-            ok: true,
-            body: {
-                token: token
-            }
-        }
-        
-        unirestMock = {
-            headers: sinon.stub().returns(unirestMock),
-            end: function(cb) {
-                cb(mockResponse)
-            }
+        mockSettings = {
+            keyFile: "none",
+            appId: "testId"
         }
 
         // mock private key
@@ -36,8 +27,7 @@ describe('Github Apps', function() {
         // mock jwt signing
         sandbox.stub(jwt, "sign")
 
-        sandbox.stub(unirest, "post").returns(unirestMock);
-        sandbox.stub(unirest, "get").returns(unirestMock)
+        sandbox.stub(config, "getGithubSettings").returns(mockSettings)
         
         uut = GithubApp()
     });
@@ -47,36 +37,20 @@ describe('Github Apps', function() {
     })
 
     it('should comply to public api', function() {
-        expect(uut.createJWT).to.be.not.undefined
+        expect(uut.jwtTokenFactory).to.be.not.undefined
         expect(uut.createBearer).to.be.not.undefined
-        expect(uut.getTokenHeaders).to.be.not.undefined
         expect(uut.getOAuthResources).to.be.not.undefined
     })
 
-    describe('HTTP Headers', function() {
-        it('should construct token contents', function() {
-            var result = uut.getTokenHeaders(token)
-            
-            expect(result['User-Agent']).to.be.equal(config.application.name)
-            expect(result['Authorization']).to.be.equal('token ' + token)
-        })
-        
-        it('should use GitHub Apps HTTP Accept mime-type', function() {
-            var result = uut.getTokenHeaders(token)
-            
-            expect(result['Accept']).to.be.equal('application/vnd.github.machine-man-preview+json')
-        })
-    })
-
-    describe('JWT signature', function() {
+    describe('JWT signature token', function() {
         it('should set issuer with appid', function(complete) {
             jwt.sign.callsFake(function(payload, cert, settings) {
                 expect(payload.iss).to.be.not.undefined
-                expect(payload.iss).to.be.equal(config.github.appId)
+                expect(payload.iss).to.be.equal(mockSettings.appId)
                 complete();
             })
             
-            uut.createJWT()
+            uut.jwtTokenFactory.create()
         })
 
         it('should use jwt sign algorithm RS256', function(complete) {
@@ -85,19 +59,24 @@ describe('Github Apps', function() {
                 complete();
             })
             
-            uut.createJWT()
+            uut.jwtTokenFactory.create()
         })
 
         it('should return unmodified jwt token', function() {
             jwt.sign.returns("testtoken")
 
-            expect(uut.createJWT()).to.be.equal("testtoken")
+            expect(uut.jwtTokenFactory.create()).to.be.equal("testtoken")
         })
     })
 
     describe('Bearer Tokens', function() {
+        var token = "testtoken"
 
         it('should return token on success', function(complete) {
+            sandbox.stub(GithubServiceApi, "requestAccessTokens").callsFake((id, jwt, fn) => {
+                fn(token)
+            })
+
             uut.createBearer(0, function(bearer, err) {
                 expect(bearer.token).to.be.equal(token)
                 expect(err).to.be.null
@@ -106,6 +85,10 @@ describe('Github Apps', function() {
         })
         
         it('should return Bearer headers on success', function(complete) {
+            sandbox.stub(GithubServiceApi, "requestAccessTokens").callsFake((id, jwt, fn) => {
+                fn(token)
+            })
+
             uut.createBearer(0, function(bearer, err) {
                 expect(bearer.headers).to.be.not.undefined
                 expect(err).to.be.null
@@ -114,10 +97,11 @@ describe('Github Apps', function() {
         })
         
         it('should return error on failure', function(complete) {
-            mockResponse.ok = false
+            sandbox.stub(GithubServiceApi, "requestAccessTokens").callsFake((id, jwt, fn) => {
+                fn(null, {body: {message: "error message"}})
+            })
 
             uut.createBearer(0, function(bearer, err) {
-                expect(bearer).to.be.null
                 expect(err).to.be.not.undefined
                 complete()
             })
@@ -125,22 +109,23 @@ describe('Github Apps', function() {
     })
 
     describe('OAuth', function() {
+        var mockInstallations
+
         beforeEach(function() {
-            mockResponse = {
-                ok: true,
-                body: {
-                    installations: [
-                        {
-                            id: 1337,
-                            account: {
-                                login: "orgname",
-                                type: "type",
-                                avatar_url: "avatar"
-                            }
-                        }
-                    ]
+            mockInstallations = [
+                {
+                    id: 1337,
+                    account: {
+                        login: "orgname",
+                        type: "type",
+                        avatar_url: "avatar"
+                    }
                 }
-            }
+            ]
+
+            sandbox.stub(GithubServiceApi, "requestInstallations").callsFake((accessToken, fn) => {
+                fn(mockInstallations)
+            })
         })
 
         it('should retrieve user organizations', function(complete) {

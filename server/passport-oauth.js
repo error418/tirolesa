@@ -1,14 +1,14 @@
 var GitHubStrategy = require("passport-github2")
 var config = require("./config");
+var githubApp = require("./github-tokens")();
 
 module.exports = function (passport) {
 
-    var githubApp = require("./github-app");
 
     // OAuth configuration *******************************************************
     passport.use(new GitHubStrategy({
-            clientID: config.github.oauth.id,
-            clientSecret: config.github.oauth.secret
+            clientID: config.getGithubSettings().oauth.id,
+            clientSecret: config.getGithubSettings().oauth.secret
         },
         function(accessToken, refreshToken, profile, done) {
             var user = {
