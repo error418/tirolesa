@@ -10,6 +10,7 @@ describe('Application configuration', function() {
     var sandbox = sinon.createSandbox();
     
     var mockConfig;
+    var envBackup = Object.assign({}, process.env);
 
     beforeEach(function() {
         mockConfig = {
@@ -32,11 +33,12 @@ describe('Application configuration', function() {
             }
         }
         
-        sandbox.stub(yaml, "load").returns(mockConfig);
+        sandbox.stub(uut, "_loadPropertyFile").returns(mockConfig);
     });
 
     afterEach(function() {
         sandbox.restore();
+        process.env = envBackup
     })
 
     it('should comply to public api', () => {
@@ -44,6 +46,51 @@ describe('Application configuration', function() {
         expect(uut.getGithubSettings).to.exist
         expect(uut.getSessionConfiguration).to.exist
         expect(uut.getApplicationSettings).to.exist
+    })
+
+    describe('Environment variables', () => {
+        it('should not return same object', () => {
+            expect(uut._applyEnvironmentVariables(mockConfig)).to.be.not.equal(mockConfig)
+        })
+
+        it('should set session storage parameters from environment', () => {
+            process.env.REDIS_HOST = "HOST"
+            process.env.REDIS_PORT = "PORT"
+            process.env.REDIS_TTL = 123
+            process.env.REDIS_LOG_ERRORS = true
+
+            var testConfig = uut._applyEnvironmentVariables(mockConfig)
+
+            expect(testConfig.session.redis).to.be.not.undefined
+            expect(testConfig.session.redis.host).to.be.equal(process.env.REDIS_HOST)
+            expect(testConfig.session.redis.port).to.be.equal(process.env.REDIS_PORT)
+            expect(testConfig.session.redis.ttl).to.be.equal(process.env.REDIS_TTL)
+            expect(testConfig.session.redis.logErrors).to.be.equal(process.env.REDIS_LOG_ERRORS)
+        })
+
+        it('should set github config from environment', () => {
+            process.env.GITHUB_OAUTH_ID = "ID"
+            process.env.GITHUB_OAUTH_SECRET = "SECRET"
+            process.env.GITHUB_APPID = 123
+            process.env.GITHUB_BASE = "BASE"
+
+            var testConfig = uut._applyEnvironmentVariables(mockConfig)
+
+            expect(testConfig.github.oauth.id).to.be.equal(process.env.GITHUB_OAUTH_ID)
+            expect(testConfig.github.oauth.secret).to.be.equal(process.env.GITHUB_OAUTH_SECRET)
+            expect(testConfig.github.appId).to.be.equal(process.env.GITHUB_APPID)
+            expect(testConfig.github.base).to.be.equal(process.env.GITHUB_BASE)
+        })
+
+        it('should set session secret from environment', () => {
+            process.env.SESSION_SECRET = "SECRET"
+
+            var testConfig = uut._applyEnvironmentVariables(mockConfig)
+
+            expect(testConfig.session.secret).to.be.equal(process.env.SESSION_SECRET)
+        })
+
+
     })
 
     it('should return correct template object', () => {
