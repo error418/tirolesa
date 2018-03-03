@@ -61,28 +61,28 @@ describe('Github Service API', function() {
         expect(uut.requestAccessTokens).to.be.not.undefined
     })
 
-    it('should use GitHub base for request installation endpoint', () => {
-        uut.requestInstallations(mockBearer, () => {})
+    it('should use GitHub base for request installation endpoint', async () => {
+        await (uut.requestInstallations(mockBearer))
         sinon.assert.calledWith(unirest.get, sinon.match(/^GITHUB BASE.*/));
     })
 
-    it('should use GitHub base for request access token endpoint', () => {
-        uut.requestAccessTokens(0, 0, () => {})
+    it('should use GitHub base for request access token endpoint', async () => {
+        await (uut.requestAccessTokens(0, 0))
         sinon.assert.calledWith(unirest.post, sinon.match(/^GITHUB BASE.*/));
     })
 
-    it('should use GitHub base for create label endpoint', () => {
-        uut.addIssueLabel(mockBearer, "testOrg", "testRepo", {}, () => {})
+    it('should use GitHub base for create label endpoint', async () => {
+        await (uut.addIssueLabel(mockBearer, "testOrg", "testRepo", {}))
+        sinon.assert.calledWith(unirest.post, sinon.match(/^GITHUB BASE.*/))
+    })
+
+    it('should use GitHub base for create repository endpoint', async () => {
+        await (uut.createRepository(mockBearer, "testOrg", {}))
         sinon.assert.calledWith(unirest.post, sinon.match(/^GITHUB BASE.*/));
     })
 
-    it('should use GitHub base for create repository endpoint', () => {
-        uut.createRepository(mockBearer, "testOrg", {}, () => {})
-        sinon.assert.calledWith(unirest.post, sinon.match(/^GITHUB BASE.*/));
-    })
-
-    it('should use GitHub base for branch protection endpoint', () => {
-        uut.configureBranch(mockBearer, "testOrg", "testRepo", "testBranch", {}, () => {})
+    it('should use GitHub base for branch protection endpoint', async () => {
+        await (uut.configureBranch(mockBearer, "testOrg", "testRepo", "testBranch", {}))
         sinon.assert.calledWith(unirest.put, sinon.match(/^GITHUB BASE.*/));
     })
 

@@ -12,7 +12,7 @@ var ghTokens = require("./github-tokens")()
  * @param {*} req http request
  * @param {*} res http response
  */
-function createRepositoryByTemplate(req, res) {
+async function createRepositoryByTemplate(req, res) {
     var err = false;
     
     var orgName = req.body.orgName;
@@ -46,53 +46,53 @@ function createRepositoryByTemplate(req, res) {
             res.send("could not authenticate to github")
             return;
         }
-
+        
         var serviceResponse = {};
-
-        var sequence = Sequence.create();
-        sequence
-            .then(function (next) {
-                ghServiceApi.createRepository(bearer, orgName, repoTemplate.config, function (result) {
-                    if(result.ok) {
-                        serviceResponse.html_url = result.body.html_url;
-                        next();
-                    } else {
-                        logger.log("error", "failed to create repository")
-                        res.status(400)
-                        res.send({
-                            message: "Was not able to create repository: " + result.body.message
-                        })
-                    }
+        try {
+            var repoResonse = await ghServiceApi.createRepository(bearer, orgName, repoTemplate.config)
+            
+            serviceResponse.html_url = repoResonse.body.html_url;
+            
+            if (!branchTemplate.config || !branchTemplate.branch) {
+                
+            .catch((err) => {
+                logger.log("error", "failed to create repository")
+                res.status(400)
+                res.send({
+                    message: "Was not able to create repository: " + result.body.message
                 })
             })
-            .then(function (next) {
-                if (!branchTemplate.config || !branchTemplate.branch) {
+        })
+        .then((next) => {
+                next();
+            } else {
+                ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config)
+                .then((body) => {
                     next();
-                } else {
-                    ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config, function (result) {
-                        if(result.ok) {
-                            next();
-                        } else {
-                            logger.log("error", "failed to apply branch protection")
-                            res.status(400)
-                            res.send({
-                                message: "Was not able to apply branch protection to repository: " + result.body.message
-                            })
-                        }
-                    })
-                }
-            })
-            .then(function(next) {
-                createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label, function () {
-                    next(); // TODO: error handling
                 })
+                .catch((err) => {
+                    logger.log("error", "failed to apply branch protection")
+                    res.status(400)
+                    res.send({
+                        message: "Was not able to apply branch protection to repository: " + result.body.message
+                    })
+                })
+            }
+        })
+        .then((next) => {
+            createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label, function () {
+                next(); // TODO: error handling
             })
-            .then(function () {
-                res.status(200);
-                res.send(serviceResponse);
-            });
+        })
+        .then(() => {
+            res.status(200);
+            res.send(serviceResponse);
+        });
+        } catch (err) {
+        
         }
-    );
+    }
+);
 }
 
 /** Lists organizations for the current user
@@ -121,7 +121,7 @@ function listTemplates(req, res) {
  * @param {*} labels labels to add
  * @param {*} end done callback
  */
-function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels, end) {
+async function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels, end) {
 
     if(!labels) {
         end();

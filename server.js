@@ -11,6 +11,10 @@ var passport = require("passport")
 var passportConfigurer = require('./server/passport-oauth')
 
 
+process.on('unhandledRejection', (err) => { 
+    logger.log("error", err)
+})
+
 // configure passport for GitHub OAuth
 passportConfigurer(passport)
 

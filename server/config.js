@@ -10,7 +10,7 @@ function _loadPropertyFile() {
 }
 
 function _applyEnvironmentVariables(configSource) {
-    let config = Object.assign({}, configSource);
+    var config = Object.assign({}, configSource);
     // override configuration with environment variables, if available
     config.github.oauth.id = process.env.GITHUB_OAUTH_ID || config.github.oauth.id
     config.github.oauth.secret = process.env.GITHUB_OAUTH_SECRET || config.github.oauth.secret
