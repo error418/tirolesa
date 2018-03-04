@@ -30,18 +30,19 @@ function createJwtTokenFactory(certificate, appId) {
  *  The retrieval function retrieves the bearer from the GitHub API and prepares contents for usage
  */
 function createBearerFactory(jwtTokenFactory) {
-    return (installationId, done) => {
-        ghServiceApi.requestAccessTokens(installationId, jwtTokenFactory.create(), (token, err) => {
-            if(!err) {
-                done({
-                    token: token,
-                    headers: ghRequestHeaders.createTokenHeaders(token)
-                }, null);
-            } else {
-                logger.log("error", "error retrieving api token: " + err.body.message)
-                done(null, err);
-            }
-        });
+    return async (installationId) => {
+        return new Promise((resolve, reject) => {
+            ghServiceApi.requestAccessTokens(installationId, jwtTokenFactory.create())
+                .then((token) => {
+                    resolve({
+                        token: token,
+                        headers: ghRequestHeaders.createTokenHeaders(token)
+                    })
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+        })
     }
 }
 
@@ -50,25 +51,31 @@ function createBearerFactory(jwtTokenFactory) {
  * @param {*} accessToken access token to use for retrieval
  * @param {*} done done function
  */
-function getOAuthResources(accessToken, done) {
-    ghServiceApi.requestInstallations(accessToken, (installations) => {
-        var resources = {
-            orgs: [],
-            installations: {}
-        }
-        
-        installations.forEach(function(org) {
-            var item = {
-                login: org.account.login,
-                type: org.account.type,
-                avatar: org.account.avatar_url
-            };
+function getOAuthResources(accessToken) {
+    return new Promise((resolve, reject) => {
+        try {
+            var installations = await (ghServiceApi.requestInstallations(accessToken))
             
-            resources.orgs.push(item);
-            resources.installations[item.login] = org.id;
-        });
-        
-        done(resources)
+            var resources = {
+                orgs: [],
+                installations: {}
+            }
+            
+            installations.forEach(function(org) {
+                var item = {
+                    login: org.account.login,
+                    type: org.account.type,
+                    avatar: org.account.avatar_url
+                };
+                
+                resources.orgs.push(item);
+                resources.installations[item.login] = org.id;
+            });
+            
+            resolve(resources)
+        } catch (err) {
+            reject(err)
+        }
     })
 }
 

@@ -50,17 +50,17 @@ async function createRepositoryByTemplate(req, res) {
         var serviceResponse = {};
         try {
             // create repository
-            var repoResonse = await ghServiceApi.createRepository(bearer, orgName, repoTemplate.config)
+            var repoResonse = await (ghServiceApi.createRepository(bearer, orgName, repoTemplate.config))
             
             serviceResponse.html_url = repoResonse.body.html_url;
             
             if (branchTemplate.config && branchTemplate.branch) {
                 // configure branches by using chosen template
-                await ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config)
+                await (ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config))
             }
             
             // create additional issue labels by template
-            await createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label)
+            await (createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label))
             
         } catch (err) {
             logger.log("info", "failed to create and configure repository: " + err)
@@ -113,7 +113,7 @@ async function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels) 
         for(var i = 0; i < labels.length; i++) {
             ((item) => {
                 try {
-                    await ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[item])
+                    await (ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[item]))
                 } catch (err) {
                     logger.log("info", "failed to create issue label: " + err)
                     reject(err)

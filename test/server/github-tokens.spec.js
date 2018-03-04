@@ -1,5 +1,11 @@
-var assert = require('chai').assert;
-var expect = require('chai').expect;
+var chai = require("chai");
+var chaiAsPromised = require("chai-as-promised");
+
+chai.use(chaiAsPromised);
+
+var assert = chai.assert;
+var expect = chai.expect;
+
 var sinon = require('sinon');
 var config = require('../../server/config')
 var jwt = require('jsonwebtoken');
@@ -28,7 +34,7 @@ describe('Github Tokens', function() {
         sandbox.stub(jwt, "sign")
 
         sandbox.stub(config, "getGithubSettings").returns(mockSettings)
-        
+
         uut = GithubApp()
     });
 
@@ -71,40 +77,34 @@ describe('Github Tokens', function() {
 
     describe('Bearer Tokens', function() {
         var token = "testtoken"
+        var tokenError = { body: { message: "error message"} }
 
-        it('should return token on success', function(complete) {
-            sandbox.stub(GithubServiceApi, "requestAccessTokens").callsFake((id, jwt, fn) => {
-                fn(token)
-            })
+        beforeEach(() => {
+            sandbox.stub(GithubServiceApi, "requestAccessTokens")
+        })
 
-            uut.createBearer(0, function(bearer, err) {
-                expect(bearer.token).to.be.equal(token)
-                expect(err).to.be.null
-                complete()
-            })
+        it('should return token on success', async () => {
+            GithubServiceApi.requestAccessTokens.resolves(token)
+            
+            var bearer = await (uut.createBearer(0))
+
+
+            expect(bearer.token).to.be.equal(token)
         })
         
-        it('should return Bearer headers on success', function(complete) {
-            sandbox.stub(GithubServiceApi, "requestAccessTokens").callsFake((id, jwt, fn) => {
-                fn(token)
-            })
-
-            uut.createBearer(0, function(bearer, err) {
-                expect(bearer.headers).to.be.not.undefined
-                expect(err).to.be.null
-                complete()
-            })
+        it('should return Bearer headers on success', async () => {
+            GithubServiceApi.requestAccessTokens.resolves(token)
+            
+            var bearer = await (uut.createBearer(0))
+        
+            expect(bearer.headers).to.be.not.undefined
         })
         
-        it('should return error on failure', function(complete) {
-            sandbox.stub(GithubServiceApi, "requestAccessTokens").callsFake((id, jwt, fn) => {
-                fn(null, {body: {message: "error message"}})
-            })
-
-            uut.createBearer(0, function(bearer, err) {
-                expect(err).to.be.not.undefined
-                complete()
-            })
+        it('should return error on failure', () => {
+            GithubServiceApi.requestAccessTokens.rejects(tokenError)
+            
+            expect(uut.createBearer(0)).to.eventually
+                .be.rejectedWith(tokenError.body.message)
         })
     })
 
@@ -128,19 +128,15 @@ describe('Github Tokens', function() {
             })
         })
 
-        it('should retrieve user organizations', function(complete) {
-            uut.getOAuthResources(token, function(resources) {
-                expect(resources.installations).to.be.not.undefined
-                expect(resources.orgs).to.be.an('array')
-                expect(resources.orgs).to.deep.include({
+        it('should retrieve user organizations', () => {
+            expect(uut.getOAuthResources(token)).to.eventually
+                .have.property("orgs").to.be.an('array')
+                .and.deep.include({
                     login: "orgname",
                     type: "type",
                     avatar: "avatar"
                 })
-
-                expect(resources.installations["orgname"]).to.be.not.undefined
-                complete()
-            })
+                .and.have.nested.property("installations.orgname").to.be.not.undefined
         })
     })
 });
