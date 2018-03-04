@@ -1,5 +1,11 @@
-var assert = require('chai').assert;
-var expect = require('chai').expect;
+var chai = require("chai");
+var chaiAsPromised = require("chai-as-promised");
+
+chai.use(chaiAsPromised);
+
+var assert = chai.assert;
+var expect = chai.expect;
+
 var sinon = require('sinon');
 var config = require('../../server/config')
 var unirest = require('unirest')
@@ -84,6 +90,38 @@ describe('Github Service API', function() {
     it('should use GitHub base for branch protection endpoint', async () => {
         await (uut.configureBranch(mockBearer, "testOrg", "testRepo", "testBranch", {}))
         sinon.assert.calledWith(unirest.put, sinon.match(/^GITHUB BASE.*/));
+    })
+
+    describe("Error handling", () => {
+        beforeEach(() => {
+            mockResponse.ok = false
+            mockResponse.body.message = "error message"
+        })
+
+        it('should reject branch configuration on error', () => {
+            expect(uut.configureBranch(mockBearer, "testOrg", "testRepo", "testBranch", {})).to.eventually
+                .be.rejectedWith(mockResponse.body.message)
+        })
+
+        it('should reject repository create on error', () => {
+            expect(uut.createRepository(mockBearer, "testOrg", {})).to.eventually
+                .be.rejectedWith(mockResponse.body.message)
+        })
+
+        it('should reject issue label create on error', () => {
+            expect(uut.addIssueLabel(mockBearer, "testOrg", "testRepo", {})).to.eventually
+                .be.rejectedWith(mockResponse.body.message)
+        })
+
+        it('should reject installation id request on error', () => {
+            expect(uut.requestInstallations(mockBearer)).to.eventually
+                .be.rejectedWith(mockResponse.body.message)
+        })
+
+        it('should reject access token request on error', () => {
+            expect(uut.requestAccessTokens(0, 0)).to.eventually
+                .be.rejectedWith(mockResponse.body.message)
+        })
     })
 
 });

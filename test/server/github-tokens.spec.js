@@ -122,10 +122,6 @@ describe('Github Tokens', function() {
                     }
                 }
             ]
-
-            sandbox.stub(GithubServiceApi, "requestInstallations").callsFake((accessToken, fn) => {
-                fn(mockInstallations)
-            })
         })
 
         it('should retrieve user organizations', () => {
