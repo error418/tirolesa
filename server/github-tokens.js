@@ -53,29 +53,29 @@ function createBearerFactory(jwtTokenFactory) {
  */
 function getOAuthResources(accessToken) {
     return new Promise((resolve, reject) => {
-        try {
-            var installations = await (ghServiceApi.requestInstallations(accessToken))
-            
-            var resources = {
-                orgs: [],
-                installations: {}
-            }
-            
-            installations.forEach(function(org) {
-                var item = {
-                    login: org.account.login,
-                    type: org.account.type,
-                    avatar: org.account.avatar_url
-                };
+        ghServiceApi.requestInstallations(accessToken)
+            .then((installations) => {
+                var resources = {
+                    orgs: [],
+                    installations: {}
+                }
                 
-                resources.orgs.push(item);
-                resources.installations[item.login] = org.id;
-            });
-            
-            resolve(resources)
-        } catch (err) {
-            reject(err)
-        }
+                installations.forEach(function(org) {
+                    var item = {
+                        login: org.account.login,
+                        type: org.account.type,
+                        avatar: org.account.avatar_url
+                    };
+                    
+                    resources.orgs.push(item);
+                    resources.installations[item.login] = org.id;
+                });
+                
+                resolve(resources)
+            })
+            .catch((err) => {
+                reject(err)
+            })
     })
 }
 

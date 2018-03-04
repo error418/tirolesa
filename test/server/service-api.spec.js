@@ -4,15 +4,17 @@ var sinon = require('sinon');
 
 var ghServiceApi = require("../../server/github-service-api")
 var config = require('../../server/config')
+var uut
 
 describe('Tirolesa Service API', function() {
-    var uut = require("../../server/service-api");
 
     var sandbox = sinon.createSandbox();
 
     var mockRequest, mockResponse, mockTemplate
     
     beforeEach(function() {
+        uut = require("../../server/service-api")
+        
         mockRequest = {
             body: {
                 repoName: "abc",

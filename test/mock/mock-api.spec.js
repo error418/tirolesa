@@ -10,7 +10,7 @@ describe('Mocking Service API', function() {
     var sandbox = sinon.createSandbox();
     
     beforeEach(function() {
-        uut = require("../../mock/service-api")
+        uut = require("../../mock/mock-api")
     });
 
     afterEach(function() {

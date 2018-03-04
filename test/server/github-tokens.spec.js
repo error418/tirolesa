@@ -1,7 +1,6 @@
 var chai = require("chai");
-var chaiAsPromised = require("chai-as-promised");
 
-chai.use(chaiAsPromised);
+chai.use(require("chai-as-promised"))
 
 var assert = chai.assert;
 var expect = chai.expect;
@@ -83,35 +82,40 @@ describe('Github Tokens', function() {
             sandbox.stub(GithubServiceApi, "requestAccessTokens")
         })
 
-        it('should return token on success', async () => {
+        it('should return token on success', (complete) => {
             GithubServiceApi.requestAccessTokens.resolves(token)
-            
-            var bearer = await (uut.createBearer(0))
 
-
-            expect(bearer.token).to.be.equal(token)
+            expect(uut.createBearer(0)).to.eventually
+                .have.property("token").to.be.equal(token)
+                .and.notify(complete)
         })
         
-        it('should return Bearer headers on success', async () => {
+        it('should return Bearer headers on success', (complete) => {
             GithubServiceApi.requestAccessTokens.resolves(token)
-            
-            var bearer = await (uut.createBearer(0))
-        
-            expect(bearer.headers).to.be.not.undefined
-        })
-        
-        it('should return error on failure', () => {
-            GithubServiceApi.requestAccessTokens.rejects(tokenError)
             
             expect(uut.createBearer(0)).to.eventually
-                .be.rejectedWith(tokenError.body.message)
+                .have.property("headers").to.be.not.undefined
+                .and.notify(complete)
+        })
+        
+        it('should return error on failure', (complete) => {
+            GithubServiceApi.requestAccessTokens.rejects(tokenError)
+            
+            expect(uut.createBearer(0)).to
+                .be.rejected
+                .and.notify(complete)
         })
     })
 
     describe('OAuth', function() {
         var mockInstallations
+        var mockInstallationsError
 
         beforeEach(function() {
+            sandbox.stub(GithubServiceApi, "requestInstallations")
+            
+            mockInstallationsError = { body: { message: "error message"} }
+
             mockInstallations = [
                 {
                     id: 1337,
@@ -124,15 +128,34 @@ describe('Github Tokens', function() {
             ]
         })
 
-        it('should retrieve user organizations', () => {
+        it('should retrieve user organizations and place them in collection', (complete) => {
+            GithubServiceApi.requestInstallations.resolves(mockInstallations)
+
             expect(uut.getOAuthResources(token)).to.eventually
                 .have.property("orgs").to.be.an('array')
-                .and.deep.include({
-                    login: "orgname",
-                    type: "type",
-                    avatar: "avatar"
-                })
-                .and.have.nested.property("installations.orgname").to.be.not.undefined
+                    .that.deep.include({
+                        login: "orgname",
+                        type: "type",
+                        avatar: "avatar"
+                    })
+                .and.notify(complete)
         })
+
+        it('should retrieve user organizations and build github app installation map', (complete) => {
+            GithubServiceApi.requestInstallations.resolves(mockInstallations)
+
+            expect(uut.getOAuthResources(token)).to.eventually
+                .have.nested.property("installations.orgname").to.be.not.undefined
+                .and.notify(complete)
+        })
+
+        it('should return error on organization fetch failure', (complete) => {
+            GithubServiceApi.requestInstallations.rejects(mockInstallationsError)
+
+            expect(uut.getOAuthResources(token)).to
+                .be.rejected
+                .and.notify(complete)
+        })
+
     })
 });

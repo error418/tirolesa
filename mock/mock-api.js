@@ -1,4 +1,3 @@
-var Sequence = require('sequence').Sequence
 var unirest = require("unirest")
 var logger = require('../server/log')
 var config = require('../server/config')
@@ -23,30 +22,11 @@ function createRepositoryByTemplate(req, res) {
         return;
     }
     
-    var sequence = Sequence.create();
-    sequence
-    .then(function (next) {
-        createRepository(orgName, repoTemplate.config, function (response) {
-            logger.log("info", "received create repo request")
-            setTimeout(function() {
-                next();
-            }, 1500);
-        })
-    })
-    .then(function (next) {
-        configureBranch(orgName, repoName, branchTemplate.branch, branchTemplate.config, function (response) {
-            logger.log("info", "received configure branch request")
-            setTimeout(function() {
-                next();
-            }, 1500);
-        })
-    })
-    .then(function () {
-        res.status(500);
-        
+    logger.log("info", "received create repo request")
+    setTimeout(function() {
         //res.send({ html_url: "none" });
         res.send({ message: "failed on something" })
-    });
+    }, 1500)
 }
 
 function listOrganizations(req, res) {
@@ -73,15 +53,6 @@ function listTemplates(req, res) {
     res.send(config.getTemplates())
 }
 
-
-function createRepository(orgName, repositoryConfig, end) {
-    end()
-}
-
-
-function configureBranch(orgName, repoName, branchName, templateConfig, end) {
-    end()
-}
 
 module.exports = {
     createRepositoryByTemplate: createRepositoryByTemplate,
