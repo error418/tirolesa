@@ -11,7 +11,7 @@ var ghTokens = require("./github-tokens")()
  * @param {*} req http request
  * @param {*} res http response
  */
-async function createRepositoryByTemplate(req, res) {
+function createRepositoryByTemplate(req, res) {
     var err = false;
     
     var orgName = req.body.orgName;
@@ -45,33 +45,35 @@ async function createRepositoryByTemplate(req, res) {
             res.send("could not authenticate to github")
             return;
         }
-        
-        var serviceResponse = {};
-        try {
-            // create repository
-            var repoResonse = await (ghServiceApi.createRepository(bearer, orgName, repoTemplate.config))
-            
-            serviceResponse.html_url = repoResonse.body.html_url;
-            
-            if (branchTemplate.config && branchTemplate.branch) {
-                // configure branches by using chosen template
-                await (ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config))
-            }
-            
-            // create additional issue labels by template
-            await (createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label))
-            
-        } catch (err) {
-            logger.log("info", "failed to create and configure repository: " + err)
-            res.status(400)
-            res.send({
-                message: "Was not able to create and configure repository. " + result.body.message
-            })
-            return;
-        }
+        // create repository
+        ghServiceApi.createRepository(bearer, orgName, repoTemplate.config)
+            .then((createRepoResponse) => {
+                var promises = []
 
-        res.status(200);
-        res.send(serviceResponse);
+                if (branchTemplate.config && branchTemplate.branch) {
+                    // configure branches by using chosen template
+                    promises.push(ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config))
+                }
+                
+                // create additional issue labels by template
+                promises.push(createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label))
+                
+                Promise
+                    .all(promises)
+                    .then(() => {
+                        res.status(200);
+                        res.send({
+                            html_url: createRepoResponse.body.html_url
+                        });
+                    })
+                    .catch((err) => {
+                        logger.log("info", "failed to create and configure repository: " + err)
+                        res.status(400)
+                        res.send({
+                            message: "Was not able to create and configure repository. " + err.body.message
+                        })
+                    })
+            })
     })
 }
 
@@ -101,7 +103,7 @@ function listTemplates(req, res) {
  * @param {*} labels labels to add
  * @param {*} end done callback
  */
-async function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels) {
+function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels) {
     return new Promise((resolve, reject) => {
 
         if(!labels) {
@@ -109,18 +111,23 @@ async function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels) 
             return
         }
         
+        var promises = []
+
         for(var i = 0; i < labels.length; i++) {
             ((item) => {
-                try {
-                    await (ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[item]))
-                } catch (err) {
-                    logger.log("info", "failed to create issue label: " + err)
-                    reject(err)
-                }
+                promises.push(ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[item]))
             })(i)
         }
 
-        resolve()
+        Promise
+            .all(promises)
+            .then(() => {
+                resolve()
+            })
+            .catch((err) => {
+                logger.log("info", "failed to create issue label: " + err)
+                reject(err)
+            })  
     })
 }
 
