@@ -1,6 +1,6 @@
 var GitHubStrategy = require("passport-github2")
 var config = require("./config");
-var githubTokens = require("./github-tokens")();
+var githubTokens = require("./github-tokens")
 
 
 function _deserializeUser(user, done) {

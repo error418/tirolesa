@@ -98,29 +98,34 @@ describe('Github Service API', function() {
             mockResponse.body.message = "error message"
         })
 
-        it('should reject branch configuration on error', () => {
+        it('should reject branch configuration on error', (complete) => {
             expect(uut.configureBranch(mockBearer, "testOrg", "testRepo", "testBranch", {})).to.eventually
                 .be.rejectedWith(mockResponse.body.message)
+                .and.notify(complete)
         })
 
-        it('should reject repository create on error', () => {
+        it('should reject repository create on error', (complete) => {
             expect(uut.createRepository(mockBearer, "testOrg", {})).to.eventually
                 .be.rejectedWith(mockResponse.body.message)
+                .and.notify(complete)
         })
 
-        it('should reject issue label create on error', () => {
+        it('should reject issue label create on error', (complete) => {
             expect(uut.addIssueLabel(mockBearer, "testOrg", "testRepo", {})).to.eventually
                 .be.rejectedWith(mockResponse.body.message)
+                .and.notify(complete)
         })
 
-        it('should reject installation id request on error', () => {
+        it('should reject installation id request on error', (complete) => {
             expect(uut.requestInstallations(mockBearer)).to.eventually
                 .be.rejectedWith(mockResponse.body.message)
+                .and.notify(complete)
         })
 
-        it('should reject access token request on error', () => {
+        it('should reject access token request on error', (complete) => {
             expect(uut.requestAccessTokens(0, 0)).to.eventually
                 .be.rejectedWith(mockResponse.body.message)
+                .and.notify(complete)
         })
     })
 

@@ -1,7 +1,14 @@
-var assert = require('chai').assert;
-var expect = require('chai').expect;
+var chai = require("chai");
+var chaiAsPromised = require("chai-as-promised");
+
+chai.use(chaiAsPromised);
+
+var assert = chai.assert;
+var expect = chai.expect;
+
 var sinon = require('sinon');
 
+var ghTokens = require("../../server/github-tokens")
 var ghServiceApi = require("../../server/github-service-api")
 var config = require('../../server/config')
 var uut
@@ -10,6 +17,7 @@ describe('Tirolesa Service API', function() {
 
     var sandbox = sinon.createSandbox();
 
+    var errorResponse = { body: { message: "test error" } }
     var mockRequest, mockResponse, mockTemplate
     
     beforeEach(function() {
@@ -52,6 +60,7 @@ describe('Tirolesa Service API', function() {
         sandbox.stub(ghServiceApi, "createRepository")
         sandbox.stub(ghServiceApi, "configureBranch")
         sandbox.stub(ghServiceApi, "addIssueLabel")
+        sandbox.stub(ghTokens, "createBearer")
 
         sandbox.stub(config, "getTemplates")
     });
@@ -85,29 +94,69 @@ describe('Tirolesa Service API', function() {
         it('should enforce repository name pattern', () => {
             mockTemplate.repo.testTemplate.pattern = "^[a-z]+$"
             mockRequest.body.repoName = "abc1"
+
             config.getTemplates.returns(mockTemplate)
             uut.createRepositoryByTemplate(mockRequest, mockResponse);
 
             sinon.assert.calledWith(mockResponse.status, 400);
-            sinon.assert.calledWith(mockResponse.send, sinon.match("repository name does not match template pattern"))
+            sinon.assert.calledWith(mockResponse.send, sinon.match.has("message", "repository name does not match template pattern"))
         })
 
         it('should deny organization access for unknown organizations', () => {
             mockRequest.body.orgName = "no access"
+
             config.getTemplates.returns(mockTemplate)
             uut.createRepositoryByTemplate(mockRequest, mockResponse);
 
             sinon.assert.calledWith(mockResponse.status, 400);
-            sinon.assert.calledWith(mockResponse.send, sinon.match("repository is not accessible"))
+            sinon.assert.calledWith(mockResponse.send, sinon.match.has("message", "repository is not accessible"))
         })
 
         it('should deny organization access for undefined organizations', () => {
             mockRequest.body.orgName = undefined
+
             config.getTemplates.returns(mockTemplate)
             uut.createRepositoryByTemplate(mockRequest, mockResponse);
 
             sinon.assert.calledWith(mockResponse.status, 400);
-            sinon.assert.calledWith(mockResponse.send, sinon.match("repository is not accessible"))
+            sinon.assert.calledWith(mockResponse.send, sinon.match.has("message", "repository is not accessible"))
+        })
+
+        it('should handle error on create repository', (complete) => {
+            config.getTemplates.returns(mockTemplate)
+
+            ghTokens.createBearer.resolves()
+            ghServiceApi.createRepository.rejects(errorResponse)
+
+            mockResponse.send.callsFake((responseCall) => {
+                sinon.assert.calledWith(mockResponse.status, 400);
+                expect(responseCall.message).to.be.equal("Was not able to create repository. " + errorResponse.body.message)
+
+                complete()
+            })
+
+            uut.createRepositoryByTemplate(mockRequest, mockResponse);
+
+        })
+    })
+
+    describe('Create Issue Labels', () => {
+        var testLabels = ["a", "b", "c"]
+
+        it('should create all requested labels', () => {
+            ghServiceApi.addIssueLabel.resolves("bearer")
+
+            uut._createIssueLabelsFromTemplate(0, "", "", testLabels)
+
+            sinon.assert.callCount(ghServiceApi.addIssueLabel, testLabels.length)
+        })
+
+        it('should handle errors', (complete) => {
+            ghServiceApi.addIssueLabel.rejects()
+
+            expect(uut._createIssueLabelsFromTemplate(0, "", "", testLabels))
+                .to.be.rejected
+                .and.notify(complete)
         })
     })
 

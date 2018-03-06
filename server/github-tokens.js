@@ -7,43 +7,43 @@ var config = require("./config");
 var ghServiceApi = require("./github-service-api")
 var ghRequestHeaders = require("./github-request-headers")
 
+var certificate
+
 /** Factory for JWT token signers
  * 
  * @param {*} certificate private key to sign with
  */
-function createJwtTokenFactory(certificate, appId) {
-    return {
-        create: () => {
-            var payload = {
-                iss: appId
-            };
-            
-            var token = jwt.sign(payload, certificate, { expiresIn: "1m", algorithm: 'RS256'});
-            
-            return token;
-        }
+function createJwtToken() {
+    if(!certificate) {
+        certificate = fs.readFileSync(config.getGithubSettings().keyFile);  // get private key
     }
+    
+    var payload = {
+        iss: config.getGithubSettings().appId
+    };
+    
+    var token = jwt.sign(payload, certificate, { expiresIn: "1m", algorithm: 'RS256'});
+    
+    return token;
 }
 
 /** Builds Bearer token retrieval function.
  * 
  *  The retrieval function retrieves the bearer from the GitHub API and prepares contents for usage
  */
-function createBearerFactory(jwtTokenFactory) {
-    return async (installationId) => {
-        return new Promise((resolve, reject) => {
-            ghServiceApi.requestAccessTokens(installationId, jwtTokenFactory.create())
-                .then((token) => {
-                    resolve({
-                        token: token,
-                        headers: ghRequestHeaders.createTokenHeaders(token)
-                    })
+function createBearer(installationId) {
+    return new Promise((resolve, reject) => {
+        ghServiceApi.requestAccessTokens(installationId, createJwtToken())
+            .then((token) => {
+                resolve({
+                    token: token,
+                    headers: ghRequestHeaders.createTokenHeaders(token)
                 })
-                .catch((err) => {
-                    reject(err);
-                })
-        })
-    }
+            })
+            .catch((err) => {
+                reject(err);
+            })
+    })
 }
 
 /** Retrieves resources from initial OAuth request
@@ -79,14 +79,9 @@ function getOAuthResources(accessToken) {
     })
 }
 
-module.exports = () => {
-    var githubConfig = config.getGithubSettings()
-    var certificate = fs.readFileSync(githubConfig.keyFile);  // get private key
-    var jwtTokenFactory = createJwtTokenFactory(certificate, githubConfig.appId);
 
-    return {
-        jwtTokenFactory: jwtTokenFactory,
-        createBearer: createBearerFactory(jwtTokenFactory),
-        getOAuthResources: getOAuthResources
-    }
+module.exports = {
+    createBearer: createBearer,
+    getOAuthResources: getOAuthResources,
+    _createJwtToken: createJwtToken
 }

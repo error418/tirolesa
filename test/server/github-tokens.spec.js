@@ -11,10 +11,9 @@ var jwt = require('jsonwebtoken');
 var fs = require('fs');
 
 var GithubServiceApi = require("../../server/github-service-api")
-var GithubApp = require("../../server/github-tokens")
 
 describe('Github Tokens', function() {
-    var uut;
+    var uut = require("../../server/github-tokens")
 
     var sandbox = sinon.createSandbox();
     var token = "tokentestcontent"
@@ -33,8 +32,6 @@ describe('Github Tokens', function() {
         sandbox.stub(jwt, "sign")
 
         sandbox.stub(config, "getGithubSettings").returns(mockSettings)
-
-        uut = GithubApp()
     });
 
     afterEach(function() {
@@ -42,7 +39,6 @@ describe('Github Tokens', function() {
     })
 
     it('should comply to public api', function() {
-        expect(uut.jwtTokenFactory).to.be.not.undefined
         expect(uut.createBearer).to.be.not.undefined
         expect(uut.getOAuthResources).to.be.not.undefined
     })
@@ -55,7 +51,7 @@ describe('Github Tokens', function() {
                 complete();
             })
             
-            uut.jwtTokenFactory.create()
+            uut._createJwtToken()
         })
 
         it('should use jwt sign algorithm RS256', function(complete) {
@@ -64,13 +60,13 @@ describe('Github Tokens', function() {
                 complete();
             })
             
-            uut.jwtTokenFactory.create()
+            uut._createJwtToken()
         })
 
         it('should return unmodified jwt token', function() {
             jwt.sign.returns("testtoken")
 
-            expect(uut.jwtTokenFactory.create()).to.be.equal("testtoken")
+            expect(uut._createJwtToken()).to.be.equal("testtoken")
         })
     })
 
