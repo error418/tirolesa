@@ -1,0 +1,70 @@
+{
+  "name": "tirolesa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "gulp",
+    "watch": "gulp watch",
+    "test": "mocha",
+    "coverage": "nyc --all mocha",
+    "coverage-report": "nyc --all --reporter=html --reporter=text mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/error418/tirolesa.git"
+  },
+  "keywords": [
+    "github",
+    "repository",
+    "generator"
+  ],
+  "author": "Michael Gerbig",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/error418/tirolesa/issues"
+  },
+  "homepage": "https://github.com/error418/tirolesa#readme",
+  "dependencies": {
+    "angular": "^1.6.7",
+    "angular-animate": "^1.6.7",
+    "angular-resource": "^1.6.7",
+    "angular-route": "^1.6.7",
+    "angular-ui-bootstrap": "^2.5.6",
+    "body-parser": "^1.18.2",
+    "connect-redis": "^3.3.3",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
+    "jsonwebtoken": "^8.1.1",
+    "passport": "^0.4.0",
+    "passport-github2": "^0.1.11",
+    "redis": "^2.8.0",
+    "unirest": "^0.5.1",
+    "winston": "^2.4.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "bootstrap-sass": "^3.3.7",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-ng-annotate": "^2.0.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.2",
+    "mocha": "^5.0.1",
+    "nyc": "^11.4.1",
+    "sinon": "^4.3.0"
+  },
+  "nyc": {
+    "exclude": [
+      "mock",
+      "test",
+      "dist",
+      "src",
+      "gulpfile.js"
+    ]
+  }
+}

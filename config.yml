@@ -1,0 +1,101 @@
+### tirolesa configuration file
+
+# you can define your yaml anchors here for easier access in your configuration
+_anchors:
+  _labels:
+    - &label-security
+      name: "security" 
+      color: "ff0000"
+    - &label-docs
+      name: "docs"
+      color: "ffff00"
+
+
+
+# Basic Application configuration
+application:
+  name: tirolesa
+  port: 3000 # application port
+
+# Session Configuration
+session:
+  secret: keyboard cat # please change this for your own security :)
+
+## Comment following lines in for storing sessions to a redis database. 
+## the application defaults to local session storage, if 'redis' is not configured
+#
+#  redis: # for configuration options see https://github.com/tj/connect-redis#options
+#    host: localhost
+#    port: 6379
+#    ttl: 30000 # session ttl
+#    logErrors: true
+#
+
+
+## GitHub App configuration
+#   You can configure these settings via environment variables
+github:
+  oauth: # GitHub App OAuth settings
+    id:  # the open auth id of your GitHub app
+    secret:  # the open auth secret of your GitHub app
+  appId:  # The AppId of your GitHub app instance (not installation!)
+  keyFile: github-app.pem # the key file of your GitHub App (you retrieve this from the App settings page)
+  base: https://api.github.com # Github Api base url
+
+
+## Template configuration
+##
+## The templates you define here will be selectable by the user.
+template:
+
+  # Repository type templates
+  # You can define multiple types of Repository templates containing different settings
+  # The templates 'default' and 'private' are examples
+  repo:
+    default:
+      name: "Default" # display name of the template
+      pattern: "^[A-Za-z][A-Za-z\\-_]+[A-Za-z]+$" # repository name pattern
+      config: &default-repo
+        private: false # is Repository private
+        has_issues: true # enable GitHub issues
+        has_projects: false # enable GitHub projects
+        has_wiki: true # enable GitHub wiki
+        allow_squash_merge: true
+        allow_merge_commit: true
+        allow_rebase_merge: true
+        auto_init: true # is required to be true; otherwise no branch settings can be applied
+        gitignore_template: "Gradle" # see https://github.com/github/gitignore
+      label: # you can define additional labels to be added to the repository
+        - *label-security
+        - *label-docs
+    private:
+      name: "Private Repository"
+      config:
+        <<: *default-repo
+        private: true
+      label:
+        - *label-docs
+  
+  # Branch templates
+  # You can define multiple branch configuration templates.
+  branch:
+    none: # leave this template in, if you want to allow repositories without branch protection
+      name: "None"
+      branch: null
+      config: null
+    default:
+      name: "Protect Master"
+      branch: "master"
+      config: &default-branch
+        required_status_checks:
+          # branches need to be up to date
+          strict: true
+          contexts: []
+        required_pull_request_reviews:
+          dismiss_stale_reviews: true
+          require_code_owner_reviews: true
+        enforce_admins:
+        restrictions:
+
+
+  
