@@ -18,6 +18,7 @@ describe('Tirolesa Service API', function() {
     var sandbox = sinon.createSandbox();
 
     var errorResponse = { body: { message: "test error" } }
+    var successResponse = { body: { html_url: "test url" } }
     var mockRequest, mockResponse, mockTemplate
     
     beforeEach(function() {
@@ -47,7 +48,9 @@ describe('Tirolesa Service API', function() {
             },
             branch: {
                 testTemplate: {
-                    pattern: "[a-z]+"
+                    pattern: "[a-z]+",
+                    config: {},
+                    branch: "master"
                 }
             }
         }
@@ -122,21 +125,70 @@ describe('Tirolesa Service API', function() {
             sinon.assert.calledWith(mockResponse.send, sinon.match.has("message", "repository is not accessible"))
         })
 
+        it('should send success response on success', (complete) => {
+            config.getTemplates.returns(mockTemplate)
+
+            ghTokens.createBearer.resolves()
+            ghServiceApi.createRepository.resolves(successResponse)
+            ghServiceApi.configureBranch.resolves()
+            ghServiceApi.addIssueLabel.resolves()
+
+            uut.createRepositoryByTemplate(mockRequest, mockResponse);
+            
+            // dodgy test assertion :(
+            setTimeout(() => {
+                sinon.assert.calledWith(mockResponse.status, 200);
+                complete()
+            }, 5)
+        })
+
+        it('should handle error on repository configuration', (complete) => {
+            config.getTemplates.returns(mockTemplate)
+
+            ghTokens.createBearer.resolves()
+            ghServiceApi.createRepository.resolves(successResponse)
+            ghServiceApi.configureBranch.rejects(errorResponse)
+
+            uut.createRepositoryByTemplate(mockRequest, mockResponse);
+            
+            // dodgy test assertion :(
+            setTimeout(() => {
+                sinon.assert.calledWith(mockResponse.status, 400);
+                sinon.assert.calledWith(mockResponse.send, { message: "Was not able to configure repository. " + errorResponse.body.message})
+                complete()
+            }, 5)
+
+        })
+
         it('should handle error on create repository', (complete) => {
             config.getTemplates.returns(mockTemplate)
 
             ghTokens.createBearer.resolves()
             ghServiceApi.createRepository.rejects(errorResponse)
 
-            mockResponse.send.callsFake((responseCall) => {
-                sinon.assert.calledWith(mockResponse.status, 400);
-                expect(responseCall.message).to.be.equal("Was not able to create repository. " + errorResponse.body.message)
-
-                complete()
-            })
-
             uut.createRepositoryByTemplate(mockRequest, mockResponse);
+            
+            // dodgy test assertion :(
+            setTimeout(() => {
+                sinon.assert.calledWith(mockResponse.status, 400);
+                sinon.assert.calledWith(mockResponse.send, { message: "Was not able to create repository. " + errorResponse.body.message})
+                complete()
+            }, 5)
+        })
 
+        it('should handle error on bearer token retrieval', (complete) => {
+            config.getTemplates.returns(mockTemplate)
+
+            ghTokens.createBearer.rejects()
+            
+            uut.createRepositoryByTemplate(mockRequest, mockResponse);
+            
+            // dodgy test assertion :(
+            setTimeout(() => {
+                sinon.assert.calledWith(mockResponse.status, 400);
+                sinon.assert.calledWith(mockResponse.send, { message: "Was not able to retrieve bearer token."})
+                complete()
+            }, 5)
         })
     })
 

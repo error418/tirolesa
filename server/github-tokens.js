@@ -14,9 +14,7 @@ var certificate
  * @param {*} certificate private key to sign with
  */
 function createJwtToken() {
-    if(!certificate) {
-        certificate = fs.readFileSync(config.getGithubSettings().keyFile);  // get private key
-    }
+    certificate = certificate || fs.readFileSync(config.getGithubSettings().keyFile);  // get private key
     
     var payload = {
         iss: config.getGithubSettings().appId

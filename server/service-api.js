@@ -74,7 +74,6 @@ function createRepositoryByTemplate(req, res) {
                         })
                 })
                 .catch((err) => {
-                    console.log("ajksdfjkaefjkaef")
                     logger.log("info", "failed to create repository: " + err)
                     res.status(400)
                     res.send({
