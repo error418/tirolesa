@@ -3,7 +3,7 @@ var app = express()
 var unirest = require("unirest")
 var yaml = require("yamljs")
 var config = require("../server/config")
-var serviceApi = require('./service-api')
+var serviceApi = require('./mock-api')
 var logger = require('../server/log')
 
 

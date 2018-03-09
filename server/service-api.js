@@ -1,11 +1,10 @@
-var Sequence = require('sequence').Sequence;
 var unirest = require("unirest");
 
 var logger = require('./log.js'); 
 var ghServiceApi = require("./github-service-api")
 
 var config = require("./config")
-var ghTokens = require("./github-tokens")()
+var ghTokens = require("./github-tokens")
 
 /** Creates a repository from a template
  * 
@@ -27,72 +26,68 @@ function createRepositoryByTemplate(req, res) {
     
     if (!repoName.match(new RegExp(repoTemplate.pattern))) {
         res.status(400)
-        res.send("repository name does not match template pattern")
+        res.send({
+            message: "repository name does not match template pattern"
+        })
         return;
     }
 
     if (!orgName || !req.user.installations[orgName]) {
         res.status(400)
-        res.send("repository is not accessible")
+        res.send({
+            message: "repository is not accessible"
+        })
         return;
     }
 
     var installationId = req.user.installations[orgName];
     
-    ghTokens.createBearer(installationId, function(bearer, err) {
-        if (err) {
-            logger.log("error", "failed to retrieve api token.")
-            res.status(400)
-            res.send("could not authenticate to github")
-            return;
-        }
+    ghTokens.createBearer(installationId)
+        .then((bearer) => {
+            // create repository
+            ghServiceApi.createRepository(bearer, orgName, repoTemplate.config)
+                .then((createRepoResponse) => {
+                    var promises = []
 
-        var serviceResponse = {};
-
-        var sequence = Sequence.create();
-        sequence
-            .then(function (next) {
-                ghServiceApi.createRepository(bearer, orgName, repoTemplate.config, function (result) {
-                    if(result.ok) {
-                        serviceResponse.html_url = result.body.html_url;
-                        next();
-                    } else {
-                        logger.log("error", "failed to create repository")
-                        res.status(400)
-                        res.send({
-                            message: "Was not able to create repository: " + result.body.message
-                        })
+                    if (branchTemplate.config && branchTemplate.branch) {
+                        // configure branches by using chosen template
+                        promises.push(ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config))
                     }
-                })
-            })
-            .then(function (next) {
-                if (!branchTemplate.config || !branchTemplate.branch) {
-                    next();
-                } else {
-                    ghServiceApi.configureBranch(bearer, orgName, repoName, branchTemplate.branch, branchTemplate.config, function (result) {
-                        if(result.ok) {
-                            next();
-                        } else {
-                            logger.log("error", "failed to apply branch protection")
+                    
+                    // create additional issue labels by template
+                    promises.push(createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label))
+                    
+                    Promise
+                        .all(promises)
+                        .then(() => {
+                            res.status(200);
+                            res.send({
+                                html_url: createRepoResponse.html_url
+                            });
+                        })
+                        .catch((err) => {
+                            logger.log("info", "failed to configure repository: " + err)
                             res.status(400)
                             res.send({
-                                message: "Was not able to apply branch protection to repository: " + result.body.message
+                                message: "Was not able to configure repository. " + err.body.message
                             })
-                        }
-                    })
-                }
-            })
-            .then(function(next) {
-                createIssueLabelsFromTemplate(bearer, orgName, repoName, repoTemplate.label, function () {
-                    next(); // TODO: error handling
+                        })
                 })
+                .catch((err) => {
+                    logger.log("info", "failed to create repository: " + err)
+                    res.status(400)
+                    res.send({
+                        message: "Was not able to create repository. " + err.body.message
+                    })
+                })
+        })
+        .catch((err) => {
+            logger.log("info", "failed to retrieve bearer token " + err)
+            res.status(400)
+            res.send({
+                message: "Was not able to retrieve bearer token."
             })
-            .then(function () {
-                res.status(200);
-                res.send(serviceResponse);
-            });
-        }
-    );
+        })
 }
 
 /** Lists organizations for the current user
@@ -121,35 +116,37 @@ function listTemplates(req, res) {
  * @param {*} labels labels to add
  * @param {*} end done callback
  */
-function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels, end) {
+function createIssueLabelsFromTemplate(bearer, orgName, repoName, labels) {
+    return new Promise((resolve, reject) => {
 
-    if(!labels) {
-        end();
-        return;
-    }
+        if(!labels) {
+            resolve()
+            return
+        }
+        
+        var promises = []
 
-    var sequence = Sequence.create();
-    
-    for(var i = 0; i < labels.length; i++) {
-        ((item) => {
-            sequence.then(function(next) {
-                ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[item], (res, err) => {
-                    if(err) {
-                        logger.log("info", "failed to create issue label: " + err)
-                    }
-                    next()
-                })
-            });
-        })(i)
-    }
-    
-    sequence.then(function() {
-        end();
+        for(var i = 0; i < labels.length; i++) {
+            ((item) => {
+                promises.push(ghServiceApi.addIssueLabel(bearer, orgName, repoName, labels[item]))
+            })(i)
+        }
+
+        Promise
+            .all(promises)
+            .then(() => {
+                resolve()
+            })
+            .catch((err) => {
+                logger.log("info", "failed to create issue label: " + err)
+                reject(err)
+            })  
     })
 }
 
 module.exports = {
     createRepositoryByTemplate: createRepositoryByTemplate,
     listOrganizations: listOrganizations,
-    listTemplates: listTemplates
+    listTemplates: listTemplates,
+    _createIssueLabelsFromTemplate: createIssueLabelsFromTemplate
 };

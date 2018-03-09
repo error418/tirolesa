@@ -10,7 +10,7 @@ describe('Mocking Service API', function() {
     var sandbox = sinon.createSandbox();
     
     beforeEach(function() {
-        uut = require("../../mock/service-api")
+        uut = require("../../mock/mock-api")
     });
 
     afterEach(function() {
@@ -20,7 +20,9 @@ describe('Mocking Service API', function() {
     for (var field in serviceApi) {
         it('should mock ' + field + '() service api function', function() {
             if (serviceApi.hasOwnProperty(field)) {
-                expect(uut[field]).to.exist
+                if(!field.startsWith("_")) {
+                    expect(uut[field]).to.exist
+                }
             }
         })
     }

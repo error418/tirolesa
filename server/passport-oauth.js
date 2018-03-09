@@ -1,40 +1,50 @@
 var GitHubStrategy = require("passport-github2")
 var config = require("./config");
-var githubApp = require("./github-tokens")();
-
-module.exports = function (passport) {
+var githubTokens = require("./github-tokens")
 
 
+function _deserializeUser(user, done) {
+    done(null, user);
+}
+
+function _serializeUser(user, done) {
+    done(null, user);
+}
+
+function _oauthResources(accessToken, refreshToken, profile, done) {
+    var user = {
+        displayName: profile.displayName,
+        username: profile.username,
+        photos: profile.photos,
+        orgs: [],
+        installations: {}
+    };
+
+    githubTokens.getOAuthResources(accessToken)
+        .then((resources) => {
+            user.orgs = resources.orgs;
+            user.installations = resources.installations;
+            
+            done(null, user);
+        });  
+}
+
+function configure(passport) {
     // OAuth configuration *******************************************************
     passport.use(new GitHubStrategy({
             clientID: config.getGithubSettings().oauth.id,
             clientSecret: config.getGithubSettings().oauth.secret
         },
-        function(accessToken, refreshToken, profile, done) {
-            var user = {
-                displayName: profile.displayName,
-                username: profile.username,
-                photos: profile.photos,
-                orgs: [],
-                installations: {}
-            };
-
-            githubApp.getOAuthResources(accessToken, function (resources) {
-                user.orgs = resources.orgs;
-                user.installations = resources.installations;
-
-                return done(null, user);
-            });  
-        }
+        _oauthResources
     ));
 
-    passport.serializeUser(function(user, done) {
-        done(null, user);
-    });
-    
-    passport.deserializeUser(function(user, done) {
-        done(null, user);
-    });
+    passport.serializeUser(_serializeUser)
+    passport.deserializeUser(_deserializeUser)
+}
 
-    return passport;
+module.exports = {
+    configureOAuth: configure,
+    _deserializeUser: _deserializeUser,
+    _serializeUser: _serializeUser,
+    _oauthResources: _oauthResources
 }
