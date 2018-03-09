@@ -5,6 +5,7 @@ var config = require('../../server/config')
 
 var GitHubStrategy = require("passport-github2")
 var passport = require("passport")
+var githubTokens = require("../../server/github-tokens")
 
 var uut = require("../../server/passport-oauth")
 
@@ -26,6 +27,8 @@ describe('Passport OAuth configuration', function() {
         sandbox.stub(passport, "use")
         sandbox.stub(passport, "serializeUser")
         sandbox.stub(passport, "deserializeUser")
+
+        sandbox.stub(githubTokens, "getOAuthResources")
     });
 
     afterEach(function() {
@@ -62,25 +65,19 @@ describe('Passport OAuth configuration', function() {
             orgs: ["A"],
             installations: ["B"]
         }
-
-        var that = {
-            githubTokens: {
-                getOAuthResources: sinon.stub()
-            }
-        }
-
         
-        uut._oauthResources.apply(that, ["", "", mockProfile, (none, user) => {
+        githubTokens.getOAuthResources.resolves(mockResources)
+        
+        uut._oauthResources("", "", mockProfile, (none, user) => {
             expect(user.displayName).to.be.equal(mockProfile.displayName)
             expect(user.username).to.be.equal(mockProfile.username)
             expect(user.photos).to.be.equal(mockProfile.photos)
-
+            
             expect(user.orgs).to.be.equal(mockResources.orgs)
             expect(user.installations).to.be.equal(mockResources.installations)
             complete()
-        }])
+        })
 
-        that.githubTokens.getOAuthResources.callArgWith(1, mockResources)
     })
 
 });

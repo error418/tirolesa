@@ -62,7 +62,7 @@ function createRepositoryByTemplate(req, res) {
                         .then(() => {
                             res.status(200);
                             res.send({
-                                html_url: createRepoResponse.body.html_url
+                                html_url: createRepoResponse.html_url
                             });
                         })
                         .catch((err) => {

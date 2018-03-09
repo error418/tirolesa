@@ -20,12 +20,13 @@ function _oauthResources(accessToken, refreshToken, profile, done) {
         installations: {}
     };
 
-    this.githubTokens.getOAuthResources(accessToken, function (resources) {
-        user.orgs = resources.orgs;
-        user.installations = resources.installations;
-
-        return done(null, user);
-    });  
+    githubTokens.getOAuthResources(accessToken)
+        .then((resources) => {
+            user.orgs = resources.orgs;
+            user.installations = resources.installations;
+            
+            done(null, user);
+        });  
 }
 
 function configure(passport) {
