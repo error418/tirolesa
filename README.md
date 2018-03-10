@@ -1,5 +1,7 @@
 # tirolesa
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/8842fffa3663f2260567/maintainability)](https://codeclimate.com/github/error418/tirolesa/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/8842fffa3663f2260567/test_coverage)](https://codeclimate.com/github/error418/tirolesa/test_coverage)
 
 
 ## Intention
