@@ -47,7 +47,7 @@ No Problem!
 You can edit the configuration file `config.yml` to customize stuff to your liking. 
 
 ### Quick Start
-The following example shows you how you can build the docker image and run the docker container by using the 'drun' command.
+The following example shows you how you can build the docker image and run the docker container by using the 'app' command.
 
 
 1. Source the environment 
@@ -57,7 +57,7 @@ The following example shows you how you can build the docker image and run the d
 
 2. Run the 'drun' command  
 
-        $ tirolesa -v -i
+        $ app -v -i
 
    NOTE: After a successful container instantiation tirolesa is available on your box under http://localhost:3000
    
