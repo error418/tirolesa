@@ -1,6 +1,7 @@
 var GitHubStrategy = require("passport-github2")
 var config = require("./config");
 var githubTokens = require("./github-tokens")
+var logger = require("./log")
 
 
 function _deserializeUser(user, done) {
@@ -30,13 +31,26 @@ function _oauthResources(accessToken, refreshToken, profile, done) {
 }
 
 function configure(passport) {
-    // OAuth configuration *******************************************************
-    passport.use(new GitHubStrategy({
-            clientID: config.getGithubSettings().oauth.id,
-            clientSecret: config.getGithubSettings().oauth.secret
-        },
-        _oauthResources
-    ));
+    var clientID = config.getGithubSettings().oauth.id,
+        clientSecret = config.getGithubSettings().oauth.secret
+
+    if(!(clientID && clientSecret)) {
+        logger.log("error", "it seems you have not configured the properties github.oauth.id and/or github.oauth.secret")
+        throw new Error("Missing configuration for properties github.oauth.id and/or github.oauth.secret please check your tirolesa configuration file.")
+    }
+
+    try {
+        // OAuth configuration *******************************************************
+        passport.use(new GitHubStrategy({
+                clientID: clientID,
+                clientSecret: clientSecret
+            },
+            _oauthResources
+        ));
+    } catch (err) {
+        logger.log("error", "failed to initialize GitHub OAuth handler.")
+        throw err
+    }
 
     passport.serializeUser(_serializeUser)
     passport.deserializeUser(_deserializeUser)
