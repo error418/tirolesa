@@ -36,8 +36,8 @@ session:
 #   You can configure these settings via environment variables
 github:
   oauth: # GitHub App OAuth settings
-    id:  # the open auth id of your GitHub app
-    secret:  # the open auth secret of your GitHub app
+    id:  CHANGEME # the open auth id of your GitHub app
+    secret: CHANGEME # the open auth secret of your GitHub app
   appId:  # The AppId of your GitHub app instance (not installation!)
   keyFile: github-app.pem # the key file of your GitHub App (you retrieve this from the App settings page)
   base: https://api.github.com # Github Api base url
