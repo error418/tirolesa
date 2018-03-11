@@ -2,6 +2,6 @@
 CWD=$(pwd)
 PATH=$CWD:$PATH
 
-drun() {
-   drun.sh "$@"
+app() {
+   app.sh "$@"
 }

@@ -57,7 +57,7 @@ The following example shows you how you can build the docker image and run the d
 
 2. Run the 'drun' command  
 
-        $ drun -v -i
+        $ tirolesa -v -i
 
    NOTE: After a successful container instantiation tirolesa is available on your box under http://localhost:3000
    

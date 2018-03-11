@@ -17,7 +17,7 @@
 #******************************************************************************/
 
 #==============================================================================
-# SCRIPT:   run.sh 
+# SCRIPT:   app.sh 
 # AUTOHR:   Markus Schneider
 # DATE:     10/03/2018
 # REV:      1.0.0
@@ -25,16 +25,20 @@
 # PURPOSE:  Wrapper for running Docker containers 
 #==============================================================================
 
+opts="vrsSh"
+
 ##----------------------------------------
 ## CONFIG
 ##----------------------------------------
-opts="visSh"
 IMAGE="tirolesa"
 NAME="tirolesa"
 VERBOSE="n"
 WAIT_TIME=5
-CLIENT_ID="CHANGEME"
-CLIENT_SECRET="CHANGEME"
+GITHUB_OAUTH_ID="CHANGEME"
+GITHUB_OAUTH_SECRET="CHANGEME"
+GITHUB_APPID="CHANGEME"
+GITHUB_BASE="CHANGEME"
+
 
 ##----------------------------------------
 ## FUNCTIONS
@@ -44,7 +48,7 @@ usage() {
   usage: ${0##*/} [-v -h -x option1 -y option2 ...]
          
          -v verbose
-         -i build the image and run the container
+         -r build and run 
          -s start 
          -S stop
          -h help
@@ -68,13 +72,13 @@ daemonize() {
    else
      docker rm -f $NAME >/dev/null 2>&1
    fi
-   docker run -dit -e "clientID=${CLIENT_ID}" -e "clientSecret=${CLIENT_SECRET}"  -p 3000:3000 --name $NAME $IMAGE 
+   docker run -dit -e "GITHUB_OAUTH_ID=${GITHUB_OAUTH_ID}" -e "GITHUB_OAUTH_SECRET=${GITHUB_OAUTH_SECRET}" -e "GIHUB_APPID=${GITHUB_APPID}" -e "GITHUB_BASE=${GITHUB_BASE}" -p 3000:3000 --name $NAME $IMAGE 
    sleep $WAIT_TIME 
    if [[ "$VERBOSE" -eq "y" ]]; then
      docker ps -a
    fi
 }
-
+   
 init() {
    build && daemonize
 }
@@ -86,7 +90,7 @@ runable() {
      eval docker $MODE $NAME 
      docker ps -a
    else
-     docker $MODE $NAME >/dev/null 2>&1
+     eval docker $MODE $NAME >/dev/null 2>&1
    fi
 }
 
@@ -95,7 +99,7 @@ procOpt() {
     do
     case $opt in
       v) VERBOSE="y";;
-      i) init;;
+      r) init;;
       s) runable start;;
       S) runable stop;;
       h) usage;;
