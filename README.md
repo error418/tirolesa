@@ -46,6 +46,22 @@ No Problem!
 
 You can edit the configuration file `config.yml` to customize stuff to your liking. 
 
+## Quick Start
+The following example shows you how you can build the docker image and run the docker container by using the 'drun' command.
+
+
+1. Source the environment 
+
+        $ cd ./tirolesa
+        $ . ./bashrc
+
+2. Run the 'drun' command  
+
+        $ drun -v -i
+
+   NOTE: After a successful container instantiation tirolesa is available on  
+   your box unter http://localhost:3000
+   
 ### Templates
 
 Templates enable you to define a set of repository configurations. A organization member can choose a template from this set when creating a repository using tirolesa.
@@ -72,6 +88,11 @@ Branch templates configure the initial branch protection settings of the reposit
 ## Technobabble
 
 tirolesa is written in `NodeJS` (backend) and `AngularJS` (frontend)
+
+
+
+
+
 
 ## Supporting the project
 
