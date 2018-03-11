@@ -77,7 +77,18 @@ describe('Passport OAuth configuration', function() {
             expect(user.installations).to.be.equal(mockResources.installations)
             complete()
         })
+    })
 
+    it('should fail on missing oauth client id property', () => {
+        mockSettings.oauth.id = undefined
+
+        expect(uut.configureOAuth.bind(passport)).to.throw(/^Missing configuration for properties.*/)
+    })
+
+    it('should fail on missing oauth secret property', () => {
+        mockSettings.oauth.secret = undefined
+
+        expect(uut.configureOAuth.bind(passport)).to.throw(/^Missing configuration for properties.*/)
     })
 
 });
