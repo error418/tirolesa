@@ -36,7 +36,7 @@ function configure(passport) {
 
     if(!(clientID && clientSecret)) {
         logger.log("error", "it seems you have not configured the properties github.oauth.id and/or github.oauth.secret")
-        throw new Error("Missing configuration for properties github.oauth.id and/or github.oauth.secret please check your tirolesa configuration file.")
+        throw new Error("Missing configuration for properties github.oauth.id and/or github.oauth.secret. Please check your tirolesa configuration file.")
     }
 
     try {
