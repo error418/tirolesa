@@ -104,11 +104,11 @@ function requestInstallations(accessToken) {
 				if (response.ok) {
 					resolve(response.body.installations)
 				} else {
-					try {
-						reject(response.body.message)
-					} catch(err) {
+					if(!(response && response.body && response.body.message)) {
 						logger.log('error', response)
 						reject('GitHub rejected the request')
+					} else {
+						reject(response.body.message)
 					}
 				}
 			})

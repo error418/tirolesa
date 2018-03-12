@@ -133,6 +133,15 @@ describe('Github Service API', function() {
 				.and.notify(complete)
 		})
 
+		it('should handle malformed responses for installation request rejection', (complete) => {
+			mockResponse.ok = false
+			mockResponse.body = undefined
+
+			expect(uut.requestInstallations(mockBearer)).to.eventually
+				.be.rejectedWith('GitHub rejected the request')
+				.and.notify(complete)
+		})
+
 		it('should reject access token request on error', (complete) => {
 			expect(uut.requestAccessTokens(0, 0)).to.eventually
 				.be.rejectedWith(mockResponse.body.message)
