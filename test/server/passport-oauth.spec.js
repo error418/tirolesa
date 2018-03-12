@@ -89,4 +89,10 @@ describe('Passport OAuth configuration', function() {
 		expect(uut.configureOAuth.bind(passport)).to.throw(/^Missing configuration for properties.*/)
 	})
 
+	it('should handle passport configuration errors', () => {
+		passport.use.throws('test error')
+
+		expect(uut.configureOAuth.bind(passport)).to.throw(/^failed to initialize GitHub OAuth handler.*/)
+	})
+
 })
