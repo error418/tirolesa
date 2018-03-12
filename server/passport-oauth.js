@@ -41,12 +41,12 @@ function configure(passport) {
 
 	try {
 		// OAuth configuration *******************************************************
-		passport.use(new GitHubStrategy({
-			clientID: clientID,
-			clientSecret: clientSecret
-		},
-		_oauthResources
-		))
+		passport.use(
+			new GitHubStrategy({
+				clientID: clientID,
+				clientSecret: clientSecret
+			}, _oauthResources)
+		)
 	} catch (err) {
 		logger.log('error', 'failed to initialize GitHub OAuth handler.')
 		throw err
