@@ -3,7 +3,6 @@ var chaiAsPromised = require('chai-as-promised')
 
 chai.use(chaiAsPromised)
 
-var assert = chai.assert
 var expect = chai.expect
 
 var sinon = require('sinon')

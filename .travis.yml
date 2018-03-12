@@ -9,6 +9,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
+  - npm run lint
   - npm run test
   - npm run coverage-report
   - npm run build
