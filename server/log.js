@@ -1,14 +1,14 @@
 // logger configuration
 
-var winston = require('winston');
+var winston = require('winston')
 
 var logger = new (winston.Logger)({
-    transports: [
-      new (winston.transports.Console)({
-        'timestamp': true
-      })
-    ]
-});
+	transports: [
+		new (winston.transports.Console)({
+			'timestamp': true
+		})
+	]
+})
 
 
-module.exports = logger;
+module.exports = logger

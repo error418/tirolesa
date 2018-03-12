@@ -3,6 +3,9 @@ env:
   es6: true
   node: true
   mocha: true
+
+globals:
+  angular: 1
   
 extends: 'eslint:recommended'
 parserOptions:

@@ -1,9 +1,9 @@
-angular.module("tirolesa")
+angular.module('tirolesa')
 
-.controller("OrgSelectController", function($scope, AuthService, OrganizationService) {
-    $scope.auth = AuthService.info(
-        function(success) {
-            $scope.orgs = OrganizationService.get();
-        }
-    );
-});
+	.controller('OrgSelectController', function($scope, AuthService, OrganizationService) {
+		$scope.auth = AuthService.info(
+			function() {
+				$scope.orgs = OrganizationService.get()
+			}
+		)
+	})
